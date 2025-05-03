@@ -1,0 +1,26 @@
+{% extends "network/layout.html" %}
+{% load static %}
+{% block title %}{{ title }}{% endblock %}
+{% block body %}
+    <div class="profile-card">
+        <h1 class="header-txt">{{ user_obj.username }}</h1>
+        {% if user.is_authenticated %}
+            {% if user_obj.username != user.username %}
+                <button class="btn btn-outline-primary"
+                    id="toggle-follow-btn"
+                    data-username="{{ user_obj.username }}"
+                    data-isfollowing="{% if is_following %}true{% else %}false{% endif %}">
+                    {% if is_following %}Unfollow{% else %}Follow{% endif %}</button>
+            {% endif %}
+        {% else %}
+            <p class="alert-div">Log in to follow!</p>
+        {% endif %}
+        <strong id="follower-count">Followers: {{ user_obj.profile.follower_count }}</strong>
+        <strong id="following-count">Following: {{ user_obj.profile.following_count }}</strong>
+    </div>
+
+    {% include "network/partials/load_posts.html" with page_obj=page_obj %}
+{% endblock %}
+{% block script %}
+    <script src="{% static 'network/index.js' %}"></script>
+{% endblock %}

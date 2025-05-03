@@ -1,0 +1,104 @@
+* {
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.nav {
+    background-color: #171c28;
+}
+
+.body {
+    background-color: #1d2433;
+    color: whitesmoke;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.header-div {
+    /*border: 1px solid yellow;*/
+}
+
+.header-txt {
+    align-self: flex-start;
+    margin-left: 15px;
+    width: 550px;
+}
+
+.post-header-txt {
+    color: #5ccfe6;
+}
+
+.profile-card {
+    border: 1px solid green;
+    min-width: 550px;
+    min-height: 100px;
+}
+
+.post-form {
+
+}
+
+.post-textarea {
+    background-color: #171c28;
+    color: whitesmoke;
+    padding: 3px 10px;
+    border-radius: 10px;
+    border: none;
+    resize: none;
+    width: 97%;
+}
+
+.posts-div {
+    /*border: 1px solid red;*/
+}
+
+.post-div {
+    border-radius: 15px;
+    width: 550px;
+    background-color: #2f3b54;
+    margin-top: 15px;
+    padding: 3px 0 1px 15px;
+    border: 1px solid orange;
+}
+
+.post-btn {
+    background-color: #5ccfe6;
+    border: none;
+    border-radius: 6px;
+    padding: 5px 10px 5px 10px;
+    font-weight: 600;
+}
+
+.edit-btn {
+    color: whitesmoke;
+    background-color: #2f3b54;
+    border: none;
+}
+
+.edit-btn:hover {
+    cursor: pointer;
+}
+
+.post-interact-div {
+    width: 100%;
+    /*border: 1px solid green;*/
+    display: inline-flex;
+    align-items: center;
+}
+
+.count {
+    margin-right: 10px;
+}
+
+.post-interact-btn {
+    border: none;
+    background-color: inherit;
+}
+
+.timestamp-txt {
+    font-size: 0.7rem;
+    color: grey;
+    margin: 0;
+}

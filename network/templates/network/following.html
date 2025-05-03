@@ -1,0 +1,13 @@
+{% extends 'network/layout.html' %}
+{% load static %}
+{% block title %}Following{% endblock %}
+{% block body %}
+    <div class="header-div">
+        <h1 class="header-txt">Following</h1>
+    </div>
+{% include "network/partials/load_posts.html" with page_obj=page_obj %}
+
+{% endblock %}
+{% block script %}
+    <script src="{% static 'network/index.js' %}"></script>
+{% endblock %}

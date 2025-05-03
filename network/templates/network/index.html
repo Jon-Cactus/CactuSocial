@@ -1,0 +1,21 @@
+{% extends "network/layout.html" %}
+{% load static %}
+{% block title %}All Posts{% endblock %}
+{% block body %}
+    <div class="header-div">
+        <h1 class="header-txt">All Posts</h1>
+    </div>
+    <div class="post-div">
+        <form id="post-form">
+            <h3>New Post</h3>
+            <textarea class="post-textarea" id="content" rows="5" cols="50" {% if  not request.user.is_authenticated %}placeholder="Login to post!" disabled{% endif %} required></textarea>
+            <div>
+                <button id="post-btn" class="post-btn" {% if not request.user.is_authenticated %}disabled{% endif %}>Post</button>
+            </div>
+        </form>
+    </div>
+    {% include "network/partials/load_posts.html" with page_obj=page_obj %}
+{% endblock %}
+{% block script %}
+    <script src="{% static 'network/index.js' %}"></script>
+{% endblock %}
