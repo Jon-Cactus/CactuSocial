@@ -40,7 +40,7 @@
 
 }
 
-.post-textarea {
+.form-textarea {
     background-color: #171c28;
     color: whitesmoke;
     padding: 3px 10px;
@@ -69,6 +69,10 @@
     border-radius: 6px;
     padding: 5px 10px 5px 10px;
     font-weight: 600;
+}
+
+.comment-btn {
+    
 }
 
 .edit-btn {

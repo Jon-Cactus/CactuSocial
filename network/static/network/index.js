@@ -54,14 +54,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 const editBtn = postDiv.querySelector('.edit-btn');
                 const editFormDiv = postDiv.querySelector('.edit-form-div');
                 // Toggle off original text display and edit button
-                postTextDiv.style.display = 'none'; // Hide original text
+                postTextDiv.style.display = 'none';
                 editBtn.style.display = 'none';
         
                 if (!postDiv.querySelector('.edit-form')) {
                     // Take control of post-div here and display form
                     editFormDiv.innerHTML =
                     `<form class="edit-form">
-                        <textarea class="post-textarea" id="edit-content" rows="5" cols="50" required>${postText}</textarea>
+                        <textarea class="form-textarea" id="edit-content" rows="5" cols="50" required>${postText}</textarea>
                         <div>
                             <button id="edit-post-save-btn" class="btn btn-primary">Save</button>
                             <a id="edit-post-cancel-btn" class="btn btn-outline-secondary">Cancel</a>
@@ -123,6 +123,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 event.target.disabled = false;
             });
         });
+        postsDiv.querySelectorAll('.comment-btn').forEach(element => {
+            element.addEventListener('click', (event) => {
+                console.log("clicked!");
+                const postDiv = event.target.closest('.post-div');
+                postDiv.querySelector('.comment-section-div').style.display = "block";
+            })
+        })
     }
     
 });
@@ -180,7 +187,15 @@ const comment = async (postId, comment) => {
                 comment: comment
             })
         });
-
+        const data = await response.json();
+        if (response.ok) {
+            return { success: true, }
+        } else {
+            return { success: false, }
+        }
+    } catch (error) {
+        console.log('Error:', error);
+        return { success: false, error: "Failed to post comment" };
     }
 }
 

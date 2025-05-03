@@ -22,13 +22,20 @@
                 {% if post.profile == user.profile %}
                     <button class="edit-btn" data-id="{{ post.id }}">Edit</button>
                 {% endif %}
-
-                    <p class="edited-timestamp-txt timestamp-txt">
-                        {% if post.edited_timestamp %}
-                            (edited {{ post.edited_timestamp }})
-                        {% endif %}
-                    </p>
-
+                <p class="edited-timestamp-txt timestamp-txt">
+                    {% if post.edited_timestamp %}
+                        (edited {{ post.edited_timestamp }})
+                    {% endif %}
+                </p>
+            </div>
+            <div class="comment-section-div" style="display: none;">
+                <div class="comment-form-div">
+                    <form id="comment-div">
+                        <textarea class="form-textarea" id="comment-content" rows="5" cols="50" required></textarea>
+                        <button id="submit-comment-btn" class="submit-comment-btn">Comment</button>
+                        <a id="cancel-comment-btn" class="btn btn-outline-secondary">Cancel</a>
+                    </form>
+                </div>
             </div>
         </div>
     {% endfor %}
