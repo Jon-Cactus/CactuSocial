@@ -8,7 +8,6 @@
             </div>
             <div class="edit-form-div"></div>
             <p class="timestamp-txt">{{ post.timestamp }}</p>
-            
             <div class="post-interact-div"> <!--contain all elements for interacting with a post-->
                 {% if user.is_authenticated %}
                     <button class="like-btn post-interact-btn" data-id="{{ post.id }}"
@@ -17,7 +16,7 @@
                     🩶
                 {% endif %}
                 <strong class="like-count count">{{ post.like_count }}</strong>
-                <button class="comment-btn post-interact-btn" data-id="{{ post.id }}">💬</button>
+                <button class="comment-btn post-interact-btn">💬</button>
                 <strong class="comment-count count">{{ post.comment_count }}</strong>
                 {% if post.profile == user.profile %}
                     <button class="edit-btn" data-id="{{ post.id }}">Edit</button>
@@ -30,11 +29,14 @@
             </div>
             <div class="comment-section-div" style="display: none;">
                 <div class="comment-form-div">
-                    <form id="comment-div">
-                        <textarea class="form-textarea" id="comment-content" rows="5" cols="50" required></textarea>
-                        <button id="submit-comment-btn" class="submit-comment-btn">Comment</button>
-                        <a id="cancel-comment-btn" class="btn btn-outline-secondary">Cancel</a>
+                    <form class="comment-form">
+                        <textarea class="form-textarea comment-content" rows="5" cols="50" required {% if not user.is_authenticated %}placeholder="Login to comment!" disabled{% endif %}></textarea>
+                        <button class="submit-comment-btn" data-id="{{ post.id }}" {% if not user.is_authenticated %}disabled{% endif %}>Comment</button>
+                        <a class="cancel-comment-btn btn btn-outline-secondary">Cancel</a>
                     </form>
+                </div>
+                <div class="comments-div">
+                    
                 </div>
             </div>
         </div>

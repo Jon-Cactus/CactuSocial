@@ -10,7 +10,7 @@
             <h3>New Post</h3>
             <textarea class="form-textarea" id="content" rows="5" cols="50" {% if  not request.user.is_authenticated %}placeholder="Login to post!" disabled{% endif %} required></textarea>
             <div>
-                <button id="post-btn" class="post-btn" {% if not request.user.is_authenticated %}disabled{% endif %}>Post</button>
+                <button id="post-btn" class="post-btn"{% if not request.user.is_authenticated %}disabled{% endif %}>Post</button>
             </div>
         </form>
     </div>

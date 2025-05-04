@@ -123,11 +123,41 @@ document.addEventListener('DOMContentLoaded', function() {
                 event.target.disabled = false;
             });
         });
+        // Handle comments
+        /*postsDiv.addEventListener('click', (event) => {
+            if (event.target.classList.contains('comment-btn')) {
+                const postDiv = event.target.closest('.post-div');
+                const commentSectionDiv = postDiv.querySelector('.comment-section-div');
+                const commentForm = commentSectionDiv.querySelector('.comment-form');
+                const commentsDiv = commentSectionDiv.querySelector('.comments-div');
+                commentSectionDiv.style.display = "block";
+                // Form submission handler as above
+            }
+        });*/
         postsDiv.querySelectorAll('.comment-btn').forEach(element => {
             element.addEventListener('click', (event) => {
-                console.log("clicked!");
                 const postDiv = event.target.closest('.post-div');
-                postDiv.querySelector('.comment-section-div').style.display = "block";
+                const commentSectionDiv = postDiv.querySelector('.comment-section-div');
+                const commentForm = commentSectionDiv.querySelector('.comment-form');
+                const commentsDiv = commentSectionDiv.querySelector('.comments-div');
+                // Display comments and form
+                commentSectionDiv.style.display = "block";
+                // Handle submission
+                commentForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const content = commentForm.querySelector('.comment-content').value;
+                    const postId = commentForm.querySelector('.submit-comment-btn').dataset.id;
+                    const result = await comment(postId, content);
+                    if (result.success) { // Ensure result has been successfully retrieved
+                        commentsDiv.insertAdjacentHTML('afterbegin',
+                            `<div class="comment">${result.comment.text}</div>`
+                        );
+                        commentForm.querySelector('.comment-content').value = '';
+                    } else {
+                        alert(`Error: ${result.error}`);
+                    }
+                })
+                // TODO: Add handler for cancel button
             })
         })
     }
@@ -179,19 +209,19 @@ const editPost = async (postId, updatedContent) => {
     }
 }
 
-const comment = async (postId, comment) => {
+const comment = async (postId, content) => {
     try {
         const response = await fetch(`/post/${postId}/comment`, {
             method: 'POST',
             body: JSON.stringify({
-                comment: comment
+                content: content
             })
         });
         const data = await response.json();
         if (response.ok) {
-            return { success: true, }
+            return { success: true, comment: data.comment }
         } else {
-            return { success: false, }
+            return { success: false, error: data.error }
         }
     } catch (error) {
         console.log('Error:', error);

@@ -16,123 +16,6 @@ from django.views.decorators.http import require_POST, require_http_methods #htt
 from django.utils import timezone
 from .models import User, Profile, Post, Comment
 
-@csrf_exempt
-@login_required
-def share_post(request):
-    if request.method != "POST":
-        return JsonResponse({"error": "POST request required."}, status=400)
-    
-    # grab all information from form object
-    data = json.loads(request.body)
-    content = data.get("content", "").strip() # isolate content
-    if not content:
-        return JsonResponse({"error": "Can't share empty posts!"}, status=400)
-    
-    post = Post(profile=request.user.profile, content=content)
-    try:
-        post.save()
-    except Exception as e:
-        return JsonResponse({"error": f"Failed to save post: {str(e)}"}, status=500)
-
-    return JsonResponse({"message": "Post shared successfully.","post_id": post.id}, status=201)
-
-@csrf_exempt
-@login_required
-def edit_post(request, post_id):
-    # Ensure this route is accessed only by PUT
-    if request.method != "PUT":
-        return JsonResponse({"error": "PUT request required."}, status=400)
-    # Ensure post exists
-    try:
-        post = Post.objects.get(id=post_id)
-    except Post.DoesNotExist:
-        return JsonResponse({"error": "Post not found."}, status=404)
-    #  Prevent the user from manually inputting the URL to edit a post
-    if post.profile.user != request.user:
-        return JsonResponse({"error": "You are not authorized to edit this post!"}, status=403)
-    # grab all information from form object
-    data = json.loads(request.body)
-    updated_content = data.get("updatedContent")
-    if updated_content is not None: # Ensure form is not empty
-        post.content = updated_content
-        post.edited_timestamp = timezone.now()
-        post.save()
-        return JsonResponse({
-            "message": "Post updated successfully.",
-            "post": {
-                "content": post.content,
-                "timestamp": post.timestamp.isoformat(),
-                "edited_timestamp": post.edited_timestamp.isoformat() if post.edited_timestamp else None
-            }
-        }, status=200)
-    else:
-        return JsonResponse({"error": "Can't save empty posts!"}, status=400)
-          
-
-@csrf_exempt
-@login_required
-@require_POST
-def follow(request, username):
-
-    try: # Ensure user exists
-        target_user = Profile.objects.get(user__username=username)
-    except User.DoesNotExist:
-        return JsonResponse({"error": "User not found."}, status=404)
-    
-    # Check edge cases
-    if request.user.profile == target_user: #
-        return JsonResponse({"error": "Cannot follow/unfollow yourself!"}, status=400)
-    if request.user.profile.following.filter(id=target_user.id).exists():
-        return JsonResponse({"error": f"Already following {username}"}, status=400)
-    
-    request.user.profile.following.add(target_user)
-    return JsonResponse({"message": f"Followed {username}",
-                         "following": True,
-                         "follower_count": target_user.follower_count}, status=201)
-
-
-@csrf_exempt
-@login_required
-@require_http_methods(['DELETE'])
-def unfollow(request, username):
-
-    try: # Ensure user exists
-        target_user = Profile.objects.get(user__username=username)
-    except User.DoesNotExist:
-        return JsonResponse({"error": "User not found"}, status=404)
-    
-    # Check edge cases
-    if request.user.profile == target_user:
-        return JsonResponse({"error": "Cannot follow/unfollow yourself!"}, status=400)
-    if not request.user.profile.following.filter(id=target_user.id).exists():
-        return JsonResponse({"error": f"Not following {username}"}, status=400)
-
-    request.user.profile.following.remove(target_user)
-    return JsonResponse({"message": f"Unfollowed {username}",
-                         "following": False,
-                         "follower_count": target_user.follower_count}, status=200)
-
-
-@csrf_exempt
-@login_required
-def like_post(request, post_id):
-    if request.method != "POST":
-        return JsonResponse({"error": "POST request required."}, status=400)
-    try:
-        post = Post.objects.get(id=post_id)
-    except Post.DoesNotExist:
-        return JsonResponse({"error": "Post not found"}, status=404)
-    # Add or remove the user from the post's likes
-    profile = request.user.profile
-    if post.likes.filter(id=profile.id).exists():
-        post.likes.remove(profile)
-        return JsonResponse({"message": "Unliked post!",
-                             "is_liked": False,
-                             "like_count": post.like_count}, status=200)
-    post.likes.add(profile)
-    return JsonResponse({"message": "Liked post!",
-                         "is_liked": True,
-                         "like_count": post.like_count}, status=200)
 
 def post_paginator(request, query, template, title, **kwargs):
     paginator = Paginator(query, 10)
@@ -234,3 +117,152 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "network/register.html")
+
+"""
+API endpoints
+"""
+
+@csrf_exempt
+@login_required
+def share_post(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required."}, status=400)
+    
+    # grab all information from form object
+    data = json.loads(request.body)
+    content = data.get("content", "").strip() # isolate content
+    if not content:
+        return JsonResponse({"error": "Can't share empty posts!"}, status=400)
+    
+    post = Post(profile=request.user.profile, content=content)
+    try:
+        post.save()
+    except Exception as e:
+        return JsonResponse({"error": f"Failed to save post: {str(e)}"}, status=500)
+
+    return JsonResponse({"message": "Post shared successfully.","post_id": post.id}, status=201)
+
+@csrf_exempt
+@login_required
+def edit_post(request, post_id):
+    # Ensure this route is accessed only by PUT
+    if request.method != "PUT":
+        return JsonResponse({"error": "PUT request required."}, status=400)
+    # Ensure post exists
+    try:
+        post = Post.objects.get(id=post_id)
+    except Post.DoesNotExist:
+        return JsonResponse({"error": "Post not found."}, status=404)
+    #  Prevent the user from manually inputting the URL to edit a post
+    if post.profile.user != request.user:
+        return JsonResponse({"error": "You are not authorized to edit this post!"}, status=403)
+    # grab all information from form object
+    data = json.loads(request.body)
+    updated_content = data.get("updatedContent")
+    if updated_content is not None: # Ensure form is not empty
+        post.content = updated_content
+        post.edited_timestamp = timezone.now()
+        post.save()
+        return JsonResponse({
+            "message": "Post updated successfully.",
+            "post": {
+                "content": post.content,
+                "timestamp": post.timestamp.isoformat(),
+                "edited_timestamp": post.edited_timestamp.isoformat() if post.edited_timestamp else None
+            }
+        }, status=200)
+    else:
+        return JsonResponse({"error": "Can't save empty posts!"}, status=400)
+
+@csrf_exempt
+@login_required
+def like_post(request, post_id):
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required."}, status=400)
+    try:
+        post = Post.objects.get(id=post_id)
+    except Post.DoesNotExist:
+        return JsonResponse({"error": "Post not found"}, status=404)
+    # Add or remove the user from the post's likes
+    profile = request.user.profile
+    if post.likes.filter(id=profile.id).exists():
+        post.likes.remove(profile)
+        return JsonResponse({"message": "Unliked post!",
+                             "is_liked": False,
+                             "like_count": post.like_count}, status=200)
+    post.likes.add(profile)
+    return JsonResponse({"message": "Liked post!",
+                         "is_liked": True,
+                         "like_count": post.like_count}, status=200)
+
+@csrf_exempt
+@login_required
+@require_POST
+def comment(request, post_id):
+    try:
+        post = Post.objects.get(id=post_id)
+    except Post.DoesNotExist:
+        return JsonResponse({"error": "Post not found"}, status=404)
+    
+    data = json.loads(request.body)
+    content = data.get("content", "").strip()
+    if not content:
+        return JsonResponse({"error": "Cannot post empty comments!"}, status=400)
+    
+    comment = Comment(profile=request.user.profile, post=post, text=content)
+    try:
+        comment.save()
+    except Exception as e:
+        return JsonResponse({"error": f"Failed to post comment: {str(e)}"})
+    return JsonResponse({
+        "message": "Comment posted successfully!",
+        "comment": {
+            "text": comment.text,
+            "timestamp": comment.timestamp,
+            "edited_timestamp": comment.edited_timestamp.isoformat() if comment.edited_timestamp else None
+        }
+    })
+          
+
+@csrf_exempt
+@login_required
+@require_POST
+def follow(request, username):
+
+    try: # Ensure user exists
+        target_user = Profile.objects.get(user__username=username)
+    except User.DoesNotExist:
+        return JsonResponse({"error": "User not found."}, status=404)
+    
+    # Check edge cases
+    if request.user.profile == target_user: #
+        return JsonResponse({"error": "Cannot follow/unfollow yourself!"}, status=400)
+    if request.user.profile.following.filter(id=target_user.id).exists():
+        return JsonResponse({"error": f"Already following {username}"}, status=400)
+    
+    request.user.profile.following.add(target_user)
+    return JsonResponse({"message": f"Followed {username}",
+                         "following": True,
+                         "follower_count": target_user.follower_count}, status=201)
+
+
+@csrf_exempt
+@login_required
+@require_http_methods(['DELETE'])
+def unfollow(request, username):
+
+    try: # Ensure user exists
+        target_user = Profile.objects.get(user__username=username)
+    except User.DoesNotExist:
+        return JsonResponse({"error": "User not found"}, status=404)
+    
+    # Check edge cases
+    if request.user.profile == target_user:
+        return JsonResponse({"error": "Cannot follow/unfollow yourself!"}, status=400)
+    if not request.user.profile.following.filter(id=target_user.id).exists():
+        return JsonResponse({"error": f"Not following {username}"}, status=400)
+
+    request.user.profile.following.remove(target_user)
+    return JsonResponse({"message": f"Unfollowed {username}",
+                         "following": False,
+                         "follower_count": target_user.follower_count}, status=200)
