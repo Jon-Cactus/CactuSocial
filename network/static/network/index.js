@@ -28,8 +28,10 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Result:', result); // Debug
             if (result.success) {
                 if (result.following) {
+                    // TODO: change to error div
                     alert("Successfully followed user")
                 } else {
+                    // TODO: change to error div
                     alert("Successfully unfollowed user")
                 }
                 // Update follower count on profile page
@@ -38,6 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 toggleFollowBtn.innerText = result.following ? 'Unfollow' : "Follow";
                 event.target.dataset.isfollowing = result.following.toString();
             } else {
+                // TODO: change to error div
                 alert(`Error: ${result.error}`);
             }
             toggleFollowBtn.disabled = false; // Restore button
@@ -118,46 +121,47 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     event.target.dataset.liked = result.isLiked;
                 } else {
+                    // TODO: change to error div
                     alert(`Error: ${result.error}`);
                 }
                 event.target.disabled = false;
             });
         });
         // Handle comments
-        /*postsDiv.addEventListener('click', (event) => {
-            if (event.target.classList.contains('comment-btn')) {
-                const postDiv = event.target.closest('.post-div');
-                const commentSectionDiv = postDiv.querySelector('.comment-section-div');
-                const commentForm = commentSectionDiv.querySelector('.comment-form');
-                const commentsDiv = commentSectionDiv.querySelector('.comments-div');
-                commentSectionDiv.style.display = "block";
-                // Form submission handler as above
-            }
-        });*/
         postsDiv.querySelectorAll('.comment-btn').forEach(element => {
             element.addEventListener('click', (event) => {
                 const postDiv = event.target.closest('.post-div');
                 const commentSectionDiv = postDiv.querySelector('.comment-section-div');
-                const commentForm = commentSectionDiv.querySelector('.comment-form');
-                const commentsDiv = commentSectionDiv.querySelector('.comments-div');
                 // Display comments and form
-                commentSectionDiv.style.display = "block";
-                // Handle submission
-                commentForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    const content = commentForm.querySelector('.comment-content').value;
-                    const postId = commentForm.querySelector('.submit-comment-btn').dataset.id;
-                    const result = await comment(postId, content);
-                    if (result.success) { // Ensure result has been successfully retrieved
-                        commentsDiv.insertAdjacentHTML('afterbegin',
-                            `<div class="comment">${result.comment.text}</div>`
-                        );
-                        commentForm.querySelector('.comment-content').value = '';
-                    } else {
-                        alert(`Error: ${result.error}`);
-                    }
-                })
-                // TODO: Add handler for cancel button
+                commentSectionDiv.style.display = commentSectionDiv.style.display === 'none' ? 'block' : 'none';
+                const commentsDiv = commentSectionDiv.querySelector('.comments-div');
+            });
+        });
+        // Handle submission
+        postsDiv.querySelectorAll('.comment-form').forEach(commentForm => {
+            commentForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const content = commentForm.querySelector('.comment-content').value;
+                const postId = commentForm.querySelector('.submit-comment-btn').dataset.id;
+                const postDiv = commentForm.closest('.post-div');
+                const commentsDiv = commentForm.closest('.comment-section-div').querySelector('.comments-div');
+                const result = await comment(postId, content);
+                if (result.success) { // Ensure result has been successfully retrieved
+                    commentsDiv.insertAdjacentHTML('afterbegin',
+                        `<div class="comment">
+                            <div class="comment-header-div">
+                                <h3 class="post-header-txt">${result.comment.username}</h3>
+                                <p class="timestamp-txt>${result.comment.timestamp}</p>
+                            </div>
+                            <p>${result.comment.text}</p>
+                        </div>`
+                    );
+                    commentForm.querySelector('.comment-content').value = '';
+                    const commentCount = postDiv.querySelector('.comment-count');
+                    commentCount.textContent = parseInt(commentCount.textContent) + 1;
+                } else {
+                    commentForm.querySelector('.comment-error-message').textContent = result.error;
+                }
             })
         })
     }

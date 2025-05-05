@@ -2,13 +2,13 @@
     {% for post in page_obj %}
         <div class="post-div">
             <h3><a class="post-header-txt" href="{% url 'profile' username=post.profile.user.username %}">{{ post.profile.user.username }}</a></h3>
-            
             <div class="post-text-div">
                 <p class="post-text">{{ post.content }}</p>
             </div>
             <div class="edit-form-div"></div>
             <p class="timestamp-txt">{{ post.timestamp }}</p>
-            <div class="post-interact-div"> <!--contain all elements for interacting with a post-->
+            <!--contain all elements for interacting with a post-->
+            <div class="post-interact-div"> 
                 {% if user.is_authenticated %}
                     <button class="like-btn post-interact-btn" data-id="{{ post.id }}"
                     data-liked="{% if user in post.likes.all %}true{% else %}false{% endif %}">❤️</button>
@@ -27,16 +27,28 @@
                     {% endif %}
                 </p>
             </div>
+            <!--Comment section-->
             <div class="comment-section-div" style="display: none;">
                 <div class="comment-form-div">
                     <form class="comment-form">
                         <textarea class="form-textarea comment-content" rows="5" cols="50" required {% if not user.is_authenticated %}placeholder="Login to comment!" disabled{% endif %}></textarea>
+                        <div class="comment-error-message"></div>
                         <button class="submit-comment-btn" data-id="{{ post.id }}" {% if not user.is_authenticated %}disabled{% endif %}>Comment</button>
-                        <a class="cancel-comment-btn btn btn-outline-secondary">Cancel</a>
                     </form>
                 </div>
                 <div class="comments-div">
-                    
+                    {% for comment in post.comment_set.all %}
+                        <div class="comment">
+                            <div class="comment-header-div">
+                                <h3><a class="post-header-txt" href="{% url 'profile' username=comment.profile.user.username %}">{{ comment.profile.user.username }}</a></h3>
+                                <p class="timestamp-txt">{{ comment.timestamp }}</p>
+                            </div>
+                            <p>{{ comment.text }}</p>
+                            {% if comment.edited_timestamp %}
+                                <p>(edited {{ comment.edited_timestamp }})</p>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>

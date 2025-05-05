@@ -217,8 +217,9 @@ def comment(request, post_id):
     return JsonResponse({
         "message": "Comment posted successfully!",
         "comment": {
+            "username": comment.profile.user.username,
             "text": comment.text,
-            "timestamp": comment.timestamp,
+            "timestamp": comment.timestamp.isoformat(),
             "edited_timestamp": comment.edited_timestamp.isoformat() if comment.edited_timestamp else None
         }
     })

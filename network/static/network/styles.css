@@ -75,6 +75,14 @@
     
 }
 
+.submit-comment-btn {
+    background-color: #ff903c;
+    border: none;
+    border-radius: 6px;
+    padding: 5px 10px 5px 10px;
+    font-weight: 600;
+}
+
 .edit-btn {
     color: whitesmoke;
     background-color: #2f3b54;
