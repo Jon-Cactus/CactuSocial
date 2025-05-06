@@ -40,7 +40,7 @@
                     {% for comment in post.comment_set.all %}
                         <div class="comment">
                             <div class="comment-header-div">
-                                <h3><a class="post-header-txt" href="{% url 'profile' username=comment.profile.user.username %}">{{ comment.profile.user.username }}</a></h3>
+                                <a class="post-header-txt" href="{% url 'profile' username=comment.profile.user.username %}">{{ comment.profile.user.username }}</a>
                                 <p class="timestamp-txt">{{ comment.timestamp }}</p>
                             </div>
                             <p>{{ comment.text }}</p>
