@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
                 if (!postDiv.querySelector('.edit-form')) {
                     // Take control of post-div here and display form
-                    editFormDiv.innerHTML =
+                    editFormDiv.innerHTML = // Refactor to create elements programmatically using DOM manipulation
                     `<form class="edit-form">
                         <textarea class="form-textarea" id="edit-content" rows="5" cols="50" required>${postText}</textarea>
                         <div>
@@ -147,15 +147,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 const commentsDiv = commentForm.closest('.comment-section-div').querySelector('.comments-div');
                 const result = await comment(postId, content);
                 if (result.success) { // Ensure result has been successfully retrieved
-                    commentsDiv.insertAdjacentHTML('afterbegin',
-                        `<div class="comment">
-                            <div class="comment-header-div">
-                                <h3 class="post-header-txt">${result.comment.username}</h3>
-                                <p class="timestamp-txt>${result.comment.timestamp}</p>
-                            </div>
-                            <p>${result.comment.text}</p>
-                        </div>`
-                    );
+                    // Create comment div
+                    const commentDiv = document.createElement('div');
+                    commentDiv.classList.add('comment');
+                    // Create header div
+                    const commentHeaderDiv = document.createElement('div');
+                    commentHeaderDiv.classList.add('comment-header-div');
+                    // Create link to user's profile
+                    const profileLink = document.createElement('a');
+                    profileLink.classList.add('post-header-txt');
+                    profileLink.href = `/profile/${result.comment.username}`;
+                    profileLink.textContent = result.comment.username;
+                    commentHeaderDiv.appendChild(profileLink);
+                    // Create timestamp
+                    const timestamp = document.createElement('p');
+                    timestamp.classList.add('timestamp-txt');
+                    timestamp.textContent = new Date(result.comment.timestamp).toLocaleString();
+                    commentHeaderDiv.appendChild(timestamp);
+
+                    commentDiv.appendChild(commentHeaderDiv);
+                    // Create comment text
+                    const commentText = document.createElement('p');
+                    commentText.textContent = result.comment.text;
+                    commentDiv.appendChild(commentText);
+                    // Insert new comment at the top of the comments section
+                    commentsDiv.prepend(commentDiv);
+                    
                     commentForm.querySelector('.comment-content').value = '';
                     const commentCount = postDiv.querySelector('.comment-count');
                     commentCount.textContent = parseInt(commentCount.textContent) + 1;
@@ -167,7 +184,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
 });
-
+/*
+API Endpoints
+*/
 const post = async () => {
     try {
         const content = document.getElementById('content').value;
