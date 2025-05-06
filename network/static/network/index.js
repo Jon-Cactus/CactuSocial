@@ -25,19 +25,18 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             toggleFollowBtn.disabled = true; // Disable button while fetching API
             const result = await toggleFollow(username, isFollowing);
-            console.log('Result:', result); // Debug
             if (result.success) {
                 if (result.following) {
                     // TODO: change to error div
-                    alert("Successfully followed user")
+                    alert('Successfully followed user')
                 } else {
                     // TODO: change to error div
-                    alert("Successfully unfollowed user")
+                    alert('Successfully unfollowed user')
                 }
                 // Update follower count on profile page
                 const followerCount = document.getElementById('follower-count');
                 followerCount.innerText = `Followers: ${result.followerCount}`;
-                toggleFollowBtn.innerText = result.following ? 'Unfollow' : "Follow";
+                toggleFollowBtn.innerText = result.following ? 'Unfollow' : 'Follow';
                 event.target.dataset.isfollowing = result.following.toString();
             } else {
                 // TODO: change to error div
@@ -63,6 +62,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!postDiv.querySelector('.edit-form')) {
                     // Take control of post-div here and display form
                     editFormDiv.innerHTML = // Refactor to create elements programmatically using DOM manipulation
+                    
                     `<form class="edit-form">
                         <textarea class="form-textarea" id="edit-content" rows="5" cols="50" required>${postText}</textarea>
                         <div>
@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
         postsDiv.querySelectorAll('.like-btn').forEach(element => {
             // Change to broken heart emoji when hovering over the dislike button
             element.addEventListener('mouseenter', () => {
-                element.innerText = (element.dataset.liked === "true") ? '💔' : '❤️';
+                element.innerText = (element.dataset.liked === 'true') ? '💔' : '❤️';
             });
             element.addEventListener('mouseleave', () => {
                 element.innerText = '❤️';
@@ -228,7 +228,7 @@ const editPost = async (postId, updatedContent) => {
         }
     } catch (error) {
         console.log('Error:', error);
-        return { success: false, error: "Failed to update post" };
+        return { success: false, error: 'Failed to update post' };
     }
 }
 
@@ -248,7 +248,7 @@ const comment = async (postId, content) => {
         }
     } catch (error) {
         console.log('Error:', error);
-        return { success: false, error: "Failed to post comment" };
+        return { success: false, error: 'Failed to post comment' };
     }
 }
 
