@@ -50,3 +50,6 @@ class Comment(models.Model): # TODO
     text = models.CharField(blank=False, null=False, max_length=512)
     timestamp = models.DateTimeField(auto_now_add=True)
     edited_timestamp = models.DateTimeField(auto_now_add=False, null=True) # TODO
+
+    class Meta:
+        ordering = ['-timestamp'] #https://docs.djangoproject.com/en/5.2/ref/models/options/#ordering
