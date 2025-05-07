@@ -60,18 +60,40 @@ document.addEventListener('DOMContentLoaded', function() {
                 editBtn.style.display = 'none';
         
                 if (!postDiv.querySelector('.edit-form')) {
-                    // Take control of post-div here and display form
-                    editFormDiv.innerHTML = // Refactor to create elements programmatically using DOM manipulation
+                    // TODO: Refactor to create elements programmatically using DOM manipulation
+                    /* Generate edited post via DOM manipulation to update UI */
+                    // Create edit form
+                    const editForm = document.createElement('form');
+                    editForm.classList.add('edit-form');
+                    // Create textarea
+                    const editContent = document.createElement('textarea');
+                    editContent.classList.add('form-textarea');
+                    editContent.id = 'edit-content';
+                    editContent.rows = 5;
+                    editContent.cols = 50;
+                    editContent.required = true;
+                    editContent.value = postText;
+                    // Create div to contain submit and cancel buttons
+                    const div = document.createElement('div');
+                    // Create save button
+                    const saveBtn = document.createElement('button');
+                    saveBtn.classList.add('btn', 'btn-primary');
+                    saveBtn.id = 'edit-post-save-btn';
+                    saveBtn.textContent = 'Save';
+                    // Create cancel button
+                    const cancelBtn = document.createElement('a');
+                    cancelBtn.classList.add('btn', 'btn-outline-secondary');
+                    cancelBtn.id = 'edit-post-cancel-btn';
+                    cancelBtn.textContent = 'Cancel';
+                    // Append buttons to div
+                    div.appendChild(saveBtn);
+                    div.appendChild(cancelBtn);
+                    // Append textarea and div to the form
+                    editForm.appendChild(editContent);
+                    editForm.appendChild(div);
+                    // Append the form to its container div
+                    editFormDiv.appendChild(editForm);
                     
-                    `<form class="edit-form">
-                        <textarea class="form-textarea" id="edit-content" rows="5" cols="50" required>${postText}</textarea>
-                        <div>
-                            <button id="edit-post-save-btn" class="btn btn-primary">Save</button>
-                            <a id="edit-post-cancel-btn" class="btn btn-outline-secondary">Cancel</a>
-                        </div>
-                    </form>`
-        
-                    const editForm = postDiv.querySelector('.edit-form');
                     editForm.addEventListener('submit', async (e) => {
                         e.preventDefault();
                         const updatedContent = editForm.querySelector('#edit-content').value;
@@ -147,6 +169,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 const commentsDiv = commentForm.closest('.comment-section-div').querySelector('.comments-div');
                 const result = await comment(postId, content);
                 if (result.success) { // Ensure result has been successfully retrieved
+
+                    /* Generate new comment via DOM manipulation to update UI */
                     // Create comment div
                     const commentDiv = document.createElement('div');
                     commentDiv.classList.add('comment');
