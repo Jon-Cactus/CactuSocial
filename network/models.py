@@ -31,7 +31,7 @@ class Profile(models.Model):
 
 class Post(models.Model):
     profile = models.ForeignKey("Profile", on_delete=models.CASCADE)
-    content = models.TextField(max_length=512, blank=False, null=False)
+    content = models.TextField(blank=False, null=False)
     likes = models.ManyToManyField("Profile", blank=True, related_name="liked_posts")
     timestamp = models.DateTimeField(auto_now_add=True)
     edited_timestamp = models.DateTimeField(auto_now_add=False, null=True) # TODO
@@ -48,8 +48,27 @@ class Comment(models.Model): # TODO
     profile = models.ForeignKey("Profile", on_delete=models.CASCADE)
     post = models.ForeignKey("Post", on_delete=models.CASCADE)
     text = models.CharField(blank=False, null=False, max_length=512)
+    likes = models.ManyToManyField("Profile", blank=True, related_name="liked_comments")
     timestamp = models.DateTimeField(auto_now_add=True)
     edited_timestamp = models.DateTimeField(auto_now_add=False, null=True) # TODO
 
+    @property
+    def reply_count(self):
+        return self.reply_set.count()
+    
+    @property
+    def like_count(self):
+        return self.likes.count()
+
     class Meta:
         ordering = ['-timestamp'] #https://docs.djangoproject.com/en/5.2/ref/models/options/#ordering
+
+class CommentReply(models.Model):
+    comment = models.ForeignKey("Comment", on_delete=models.CASCADE, related_name="replies")
+    profile = models.ForeignKey("Profile", on_delete=models.CASCADE, related_name="coment_replies")
+    text = models.CharField(max_length=512, blank=False, null=False)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    edited_timestamp = models.DateTimeField(auto_now_add=False, null=True)
+
+    class Meta:
+        ordering = ['-timestamp']

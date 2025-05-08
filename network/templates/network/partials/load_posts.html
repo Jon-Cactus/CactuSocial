@@ -9,10 +9,10 @@
             <div class="edit-form-div"></div>
             <p class="timestamp-txt">{{ post.timestamp }}</p>
             <!--contain all elements for interacting with a post-->
-            <div class="post-interact-div"> 
+            <div class="interact-div"> 
                 {% if user.is_authenticated %}
                     <button class="like-btn post-interact-btn" data-id="{{ post.id }}"
-                    data-liked="{% if user in post.likes.all %}true{% else %}false{% endif %}">❤️</button>
+                    data-liked="{% if user.profile in post.likes.all %}true{% else %}false{% endif %}">❤️</button>
                 {% else %}
                     🩶
                 {% endif %}
@@ -30,6 +30,7 @@
             </div>
             <!--Comment section-->
             <div class="comment-section-div" style="display: none;">
+                <!--Comment form-->
                 <div class="comment-form-div">
                     <form class="comment-form">
                         <textarea class="form-textarea comment-content" rows="5" cols="50" required {% if not user.is_authenticated %}placeholder="Login to comment!" disabled{% endif %}></textarea>
@@ -37,7 +38,9 @@
                         <button class="submit-comment-btn" data-id="{{ post.id }}" {% if not user.is_authenticated %}disabled{% endif %}>Comment</button>
                     </form>
                 </div>
+                <!--Comments container-->
                 <div class="comments-div">
+                    <h3>Comments</h3>
                     {% for comment in post.comment_set.all %}
                         <div class="comment">
                             <div class="comment-header-div">
@@ -45,9 +48,27 @@
                                 <p class="timestamp-txt">{{ comment.timestamp }}</p>
                             </div>
                             <p>{{ comment.text }}</p>
-                            {% if comment.edited_timestamp %}
-                                <p>(edited {{ comment.edited_timestamp }})</p>
-                            {% endif %}
+                            <!--Comment interact buttons-->
+                            <div class="interact-div"> 
+                                {% if user.is_authenticated %}
+                                    <button class="like-btn post-interact-btn" data-id="{{ comment.id }}"
+                                    data-liked="{% if user.profile in comment.likes.all %}true{% else %}false{% endif %}">❤️</button>
+                                {% else %}
+                                    🩶
+                                {% endif %}
+                                <strong class="like-count count">{{ comment.like_count }}</strong>
+                                {% if comment.profile != user.profile %}
+                                    <button class="reply-btn post-interact-btn">Reply</button>
+                                {% endif %}
+                                {% if comment.profile == user.profile %}
+                                    <button class="edit-btn" data-id="{{ post.id }}">Edit</button>
+                                {% endif %}
+                                <p class="edited-timestamp-txt timestamp-txt">
+                                    {% if comment.edited_timestamp %}
+                                        (edited {{ comment.edited_timestamp }})
+                                    {% endif %}
+                                </p>
+                            </div>
                         </div>
                     {% endfor %}
                 </div>

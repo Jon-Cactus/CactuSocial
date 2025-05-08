@@ -179,7 +179,7 @@ def edit_post(request, post_id):
 def like_post(request, post_id):
     if request.method != "POST":
         return JsonResponse({"error": "POST request required."}, status=400)
-    try:
+    try: # Ensure post exists
         post = Post.objects.get(id=post_id)
     except Post.DoesNotExist:
         return JsonResponse({"error": "Post not found"}, status=404)
@@ -195,11 +195,13 @@ def like_post(request, post_id):
                          "is_liked": True,
                          "like_count": post.like_count}, status=200)
 
+# TODO: unlike_post
+
 @csrf_exempt
 @login_required
 @require_POST
 def comment(request, post_id):
-    try:
+    try: # Ensure post exists
         post = Post.objects.get(id=post_id)
     except Post.DoesNotExist:
         return JsonResponse({"error": "Post not found"}, status=404)
@@ -223,6 +225,56 @@ def comment(request, post_id):
             "edited_timestamp": comment.edited_timestamp.isoformat() if comment.edited_timestamp else None
         }
     })
+
+@csrf_exempt
+@login_required
+@require_POST
+def comment_reply(request, comment_id):
+    # TODO
+    try: # Ensure comment exists
+        comment = Comment.objects.get(id=comment_id)
+    except Comment.DoesNotExist:
+        return JsonResponse({"error": "Comment not found"}, status=404)
+    
+    profile = request.user.profile
+    comment.
+
+@csrf_exempt
+@login_required
+@require_POST
+def like_comment(request, comment_id):
+    # TODO
+    try: # Ensure comment exists
+        comment = Comment.objects.get(id=comment_id)
+    except Comment.DoesNotExist:
+        return JsonResponse({"error": "Comment not found"}, status=404)
+    
+    profile = request.user.profile
+    comment.likes.add(profile)
+
+    return JsonResponse({
+        "message": "Liked comment!",
+        "is_liked": True,
+        "like_count": comment.like_count}, status=200)
+    
+
+@csrf_exempt
+@login_required
+@require_http_methods(["DELETE"])
+def unlike_comment(request, comment_id):
+    # TODO
+    try: # Ensure comment exists
+        comment = Comment.objects.get(id=comment_id)
+    except Comment.DoesNotExist:
+        return JsonResponse({"error": "Comment not found"}, status=404)
+    
+    profile = request.user.profile
+    comment.likes.add(profile)
+
+    return JsonResponse({
+        "messsage": "Unliked comment!",
+        "is_liked": False,
+        "like_count": comment.like_count}, status=200)
           
 
 @csrf_exempt
