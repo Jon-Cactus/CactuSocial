@@ -14,9 +14,9 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST, require_http_methods #https://docs.djangoproject.com/en/5.2/topics/http/decorators
 from django.utils import timezone
-from .models import User, Profile, Post, Comment
+from .models import User, Profile, Post, Comment, CommentReply
 
-
+# Tool for generating views
 def post_paginator(request, query, template, title, **kwargs):
     paginator = Paginator(query, 10)
     page_number = request.GET.get("page")
@@ -140,7 +140,8 @@ def share_post(request):
     except Exception as e:
         return JsonResponse({"error": f"Failed to save post: {str(e)}"}, status=500)
 
-    return JsonResponse({"message": "Post shared successfully.","post_id": post.id}, status=201)
+    return JsonResponse({"message": "Post shared successfully.",
+                         "post_id": post.id}, status=201)
 
 @csrf_exempt
 @login_required
@@ -215,16 +216,19 @@ def comment(request, post_id):
     try:
         comment.save()
     except Exception as e:
-        return JsonResponse({"error": f"Failed to post comment: {str(e)}"})
+        return JsonResponse({"error": f"Failed to post comment: {str(e)}"}, status=400)
     return JsonResponse({
         "message": "Comment posted successfully!",
         "comment": {
             "username": comment.profile.user.username,
             "text": comment.text,
             "timestamp": comment.timestamp.isoformat(),
-            "edited_timestamp": comment.edited_timestamp.isoformat() if comment.edited_timestamp else None
+            # TODO: move to edit_comment function
+            "edited_timestamp": comment.edited_timestamp.isoformat() if comment.edited_timestamp else None,
+            # TODO: reply count
         }
     })
+
 
 @csrf_exempt
 @login_required
@@ -236,8 +240,25 @@ def comment_reply(request, comment_id):
     except Comment.DoesNotExist:
         return JsonResponse({"error": "Comment not found"}, status=404)
     
+    data = json.loads(request.body)
+    text = data.get("text", "").strip()
+    if not text:
+        return JsonResponse({"error": "Cannot post empty replies!"}, status=400)
+    
     profile = request.user.profile
-    comment.
+    comment_reply = CommentReply(profile=profile, comment=comment, text=text)
+    try:
+        comment_reply.save()
+    except Exception as e:
+        return JsonResponse({"error": f"Failed to post reply: {str(e)}"}, status=400)
+    return JsonResponse({
+        "message": "Reply posted successfully!",
+        "comment_reply": {
+            "username": comment_reply.profile.user.username,
+            "text": comment_reply.text,
+            "timestamp": comment.timestamp,
+        }})
+
 
 @csrf_exempt
 @login_required

@@ -3,6 +3,10 @@
     box-sizing: border-box;
 }
 
+button:focus, a:focus {
+    outline: none;
+}
+
 .nav {
     background-color: #171c28;
 }
@@ -88,7 +92,23 @@
 .comments-div {
 }
 
-.edit-btn {
+/* testing */
+.reply-header-div {
+    align-items: baseline;
+    margin-bottom: 2px;
+}
+
+.reply-header p {
+    margin: 0;
+    font-size: 0.7rem;
+    color: grey;
+    display: inline-flex;
+    gap: 5px;
+    margin: 0px;
+    border: 1px solid red;
+}
+
+.comment-edit-btn, .edit-btn {
     color: whitesmoke;
     background-color: #2f3b54;
     border: none;
@@ -100,7 +120,7 @@
 
 .interact-div {
     width: 100%;
-    /*border: 1px solid green;*/
+    border: 1px solid green;
     display: inline-flex;
     align-items: center;
 }
@@ -112,6 +132,7 @@
 .post-interact-btn {
     border: none;
     background-color: inherit;
+    color: #c3a6ff;
 }
 
 .timestamp-txt {

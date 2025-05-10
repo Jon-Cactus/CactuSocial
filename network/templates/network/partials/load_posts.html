@@ -11,7 +11,7 @@
             <!--contain all elements for interacting with a post-->
             <div class="interact-div"> 
                 {% if user.is_authenticated %}
-                    <button class="like-btn post-interact-btn" data-id="{{ post.id }}"
+                    <button class="post-like-btn post-interact-btn" data-id="{{ post.id }}"
                     data-liked="{% if user.profile in post.likes.all %}true{% else %}false{% endif %}">❤️</button>
                 {% else %}
                     🩶
@@ -42,7 +42,7 @@
                 <div class="comments-div">
                     <h3>Comments</h3>
                     {% for comment in post.comment_set.all %}
-                        <div class="comment">
+                        <div class="comment-div">
                             <div class="comment-header-div">
                                 <a class="post-header-txt" href="{% url 'profile' username=comment.profile.user.username %}">{{ comment.profile.user.username }}</a>
                                 <p class="timestamp-txt">{{ comment.timestamp }}</p>
@@ -51,23 +51,50 @@
                             <!--Comment interact buttons-->
                             <div class="interact-div"> 
                                 {% if user.is_authenticated %}
-                                    <button class="like-btn post-interact-btn" data-id="{{ comment.id }}"
+                                    <button class="comment-like-btn post-interact-btn" data-id="{{ comment.id }}"
                                     data-liked="{% if user.profile in comment.likes.all %}true{% else %}false{% endif %}">❤️</button>
                                 {% else %}
                                     🩶
                                 {% endif %}
                                 <strong class="like-count count">{{ comment.like_count }}</strong>
                                 {% if comment.profile != user.profile %}
-                                    <button class="reply-btn post-interact-btn">Reply</button>
+                                    <button class="reply-btn post-interact-btn" data-replycount="{{ comment.reply_count }}">Load {{ comment.reply_count }} replies</button>
                                 {% endif %}
                                 {% if comment.profile == user.profile %}
-                                    <button class="edit-btn" data-id="{{ post.id }}">Edit</button>
+                                    <button class="comment-edit-btn" data-id="{{ post.id }}">Edit</button>
                                 {% endif %}
                                 <p class="edited-timestamp-txt timestamp-txt">
                                     {% if comment.edited_timestamp %}
                                         (edited {{ comment.edited_timestamp }})
                                     {% endif %}
                                 </p>
+                            </div>
+                            <!--Reply section-->
+                            <!--TODO: give reply section div a distinct background so that replies are easy to separate from comments-->
+                            <div class="reply-section-div" style="display: none;">
+                                <!--Reply form-->
+                                <div class="reply-form-div">
+                                    <form class="reply-form">
+                                        <textarea class="form-textarea reply-text" rows="5" cols="50" required {% if not user.is_authenticated %}placeholder="Login to reply!" disabled{% endif %}></textarea>
+                                        <div class="reply-error-message"></div>
+                                        <button class="submit-reply-btn" data-id="{{ comment.id }}" {% if not user.is_authenticated %}disabled{% endif %}>Reply</button>
+                                    </form>
+                                </div>
+                                <!--Replies-->
+                                <div class="replies-div">
+                                    {% for reply in comment.replies.all %}
+                                        <div class="reply-div">
+                                            <div class="reply-header-div">
+                                                <span class="reply-header">
+                                                    <a class="post-header-txt" href="{% url 'profile' username=reply.profile.user.username %}">{{ reply.profile.user.username }}</a>
+                                                    <p>replying to: {{ comment.profile.user.username }}</p>
+                                                </span>
+                                                <p class="timestamp-txt">{{ reply.timestamp }}</p>
+                                            </div>
+                                            <p>{{ reply.text }}</p>
+                                        </div>
+                                    {% endfor %}
+                                </div>
                             </div>
                         </div>
                     {% endfor %}

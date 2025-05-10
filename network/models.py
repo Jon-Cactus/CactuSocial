@@ -54,7 +54,7 @@ class Comment(models.Model): # TODO
 
     @property
     def reply_count(self):
-        return self.reply_set.count()
+        return self.replies.count()
     
     @property
     def like_count(self):

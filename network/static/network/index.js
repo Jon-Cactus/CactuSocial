@@ -1,9 +1,12 @@
+/* Please note that I have studied JavaScript under Scrimba and freeCodeCamp,
+and that I will be using some of the materials taught there */
+
+
 document.addEventListener('DOMContentLoaded', function() {
     // Gain control of necessary DOM elements
     const postForm = document.getElementById('post-form');
     const postsDiv = document.querySelector('.posts-div');
     const toggleFollowBtn = document.getElementById('toggle-follow-btn');
-    const likeBtn = document.getElementById('like-btn');
 
     // Handle post form submission
     if (postForm) {
@@ -47,6 +50,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }  
 
     // Handle post edits
+    /* TODO: potential refactor with changing scope of certain variables (postDiv for example,
+    so that it isn't necessary to check for postsDiv for every action) */
     if (postsDiv) {
         postsDiv.querySelectorAll('.edit-btn').forEach(element => {
             element.addEventListener('click', (event) => { // Add event listeners to each btn
@@ -60,7 +65,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 editBtn.style.display = 'none';
         
                 if (!postDiv.querySelector('.edit-form')) {
-                    // TODO: Refactor to create elements programmatically using DOM manipulation
                     /* Generate edited post via DOM manipulation to update UI */
                     // Create edit form
                     const editForm = document.createElement('form');
@@ -94,8 +98,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Append the form to its container div
                     editFormDiv.appendChild(editForm);
                     
-                    editForm.addEventListener('submit', async (e) => {
-                        e.preventDefault();
+                    editForm.addEventListener('submit', async (event) => {
+                        event.preventDefault();
                         const updatedContent = editForm.querySelector('#edit-content').value;
                         const postId = element.dataset.id;
                         const result = await editPost(postId, updatedContent);
@@ -111,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             alert(`Error: ${result.error}`)
                         }
                     });
-        
+                    // TODO: Check if there is a better way to handle this
                     postDiv.querySelector('#edit-post-cancel-btn').addEventListener('click', () => {
                         editFormDiv.innerHTML = '';
                         postTextDiv.style.display = 'block';
@@ -121,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
         // Handle likes
-        postsDiv.querySelectorAll('.like-btn').forEach(element => {
+        postsDiv.querySelectorAll('.post-like-btn').forEach(element => {
             // Change to broken heart emoji when hovering over the dislike button
             element.addEventListener('mouseenter', () => {
                 element.innerText = (element.dataset.liked === 'true') ? '💔' : '❤️';
@@ -136,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Disable button to protect from spam clicks
                 event.target.disabled = true;
 
-                const result = await likePost(postId);
+                const result = await toggleLikePost(postId);
                 if (result.success) {
                     const likeCount = event.target.closest('.post-div').querySelector('.like-count');
                     likeCount.textContent = result.likeCount;
@@ -154,15 +158,16 @@ document.addEventListener('DOMContentLoaded', function() {
             element.addEventListener('click', (event) => {
                 const postDiv = event.target.closest('.post-div');
                 const commentSectionDiv = postDiv.querySelector('.comment-section-div');
-                // Display comments and form
+                // Toogle display of comment section
                 commentSectionDiv.style.display = commentSectionDiv.style.display === 'none' ? 'block' : 'none';
-                const commentsDiv = commentSectionDiv.querySelector('.comments-div');
             });
         });
-        // Handle submission
+        // Handle comment submission
+        /* TODO: investigate why this is querySelectorAll and not querySelector. Probably can do
+        postsDiv.querySelector('.comment-form').addEventListener('submit'.... */
         postsDiv.querySelectorAll('.comment-form').forEach(commentForm => {
-            commentForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
+            commentForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
                 const content = commentForm.querySelector('.comment-content').value;
                 const postId = commentForm.querySelector('.submit-comment-btn').dataset.id;
                 const postDiv = commentForm.closest('.post-div');
@@ -173,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     /* Generate new comment via DOM manipulation to update UI */
                     // Create comment div
                     const commentDiv = document.createElement('div');
-                    commentDiv.classList.add('comment');
+                    commentDiv.classList.add('comment-div');
                     // Create header div
                     const commentHeaderDiv = document.createElement('div');
                     commentHeaderDiv.classList.add('comment-header-div');
@@ -205,12 +210,58 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             })
         })
+        postsDiv.querySelectorAll('.reply-btn').forEach(element => {
+            element.addEventListener('click', (event) => {
+                const commentDiv = event.target.closest('.comment-div');
+                const replySectionDiv = commentDiv.querySelector('.reply-section-div');
+                // Toggle display of reply section
+                replySectionDiv.style.display = replySectionDiv.style.display === 'none' ? 'block' : 'none';
+                element.innerText = replySectionDiv.style.display === 'none' ? `Load ${element.dataset.replycount} replies` : 'Hide';
+            })
+        })
+        postsDiv.querySelectorAll('.reply-form').forEach(replyForm => {
+            replyForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const replyText = replyForm.querySelector('.reply-text').value;
+                const commentId = replyForm.querySelector('.submit-reply-btn').dataset.id;
+                const repliesDiv = replyForm.closest('.replies-div');
+
+                const result = await commentReply(commentId, replyText);
+                if (result.success) {
+                    /* Generate new comment via DOM manipulation to update UI */
+                    // Create reply div
+                    const replyDiv = document.createElement('div');
+                    replyDiv.classList.add('.reply-div');
+                    // Create reply header div
+                    const replyHeaderDiv = document.createElement('div');
+                    replyHeaderDiv.classList.add('.reply-header-div');
+                    //Create link to user's profile
+                    const profileLink = document.createElement('a');
+                    profileLink.classList.add('post-header-text');
+                    profileLink.href = `/profile/${result.commentReply.username}`;
+                    replyHeaderDiv.appendChild(profileLink);
+                    // Create timestamp
+                    const timestamp = document.createElement('p');
+                    timestamp.classList.add('.timestamp-txt');
+                    timestamp.textContent = new Date(result.commentReply.timestamp).toLocaleString().at;
+                    replyHeaderDiv.appendChild(timestamp);
+                    
+                    replyDiv.appendChild(replyHeaderDiv);
+                    // Create reply text
+                    const replyTextElement = document.createElement('p');
+                    replyText.textContent = result.commentReply.text;
+                    replyDiv.appendChild(replyTextElement);
+                    // Insert replyDiv to the replies container
+                    repliesDiv.prepend(replyDiv);
+                }
+            })
+        })
     }
     
 });
-/*
-API Endpoints
-*/
+
+/*API Endpoints*/
+
 const post = async () => {
     try {
         const content = document.getElementById('content').value;
@@ -256,27 +307,7 @@ const editPost = async (postId, updatedContent) => {
     }
 }
 
-const comment = async (postId, content) => {
-    try {
-        const response = await fetch(`/post/${postId}/comment`, {
-            method: 'POST',
-            body: JSON.stringify({
-                content: content
-            })
-        });
-        const data = await response.json();
-        if (response.ok) {
-            return { success: true, comment: data.comment }
-        } else {
-            return { success: false, error: data.error }
-        }
-    } catch (error) {
-        console.log('Error:', error);
-        return { success: false, error: 'Failed to post comment' };
-    }
-}
-
-const likePost = async (postId) => {
+const toggleLikePost = async (postId) => {
     try {
         const response = await fetch(`/post/${postId}/like`, {
             method: 'POST',
@@ -290,11 +321,51 @@ const likePost = async (postId) => {
                 likeCount: data.like_count
             }
         } else {
-            return { success: false, error: data.error }
+            return { success: false, error: data.error };
         }
     } catch (error) {
         console.error('Error:', error);
-        return { success: false, error: error.message }
+        return { success: false, error: error.message };
+    }
+}
+
+const comment = async (postId, content) => {
+    try {
+        const response = await fetch(`/post/${postId}/comment`, {
+            method: 'POST',
+            body: JSON.stringify({
+                content: content
+            })
+        });
+        const data = await response.json();
+        if (response.ok) {
+            return { success: true, comment: data.comment };
+        } else {
+            return { success: false, error: data.error };
+        }
+    } catch (error) {
+        console.log('Error:', error);
+        return { success: false, error: 'Failed to post comment' };
+    }
+}
+
+const commentReply = async (commentId, text) => {
+    try {
+        const response = await fetch(`post/${commentId}/reply`, {
+            method: 'POST',
+            body: JSON.stringify({
+                text: text
+            })
+        })
+        const data = await response.json();
+        if (response.ok) {
+            return { success: true, commentReply: data.comment_reply };
+        } else {
+            return { success: false, error: data.error };
+        }
+    } catch (error) {
+        console.log('Error:', error)
+        return { success: false, error: 'Failed to post reply' };
     }
 }
 
@@ -315,10 +386,10 @@ const toggleFollow = async (username, isFollowing) => {
                 followerCount: data.follower_count
             };
         } else {
-            return { success: false, error: data.error }
+            return { success: false, error: data.error };
         }
     } catch (error) {
         console.error('Error:', error);
-        return { success: false, error: error.message }
+        return { success: false, error: error.message };
     }
 }
