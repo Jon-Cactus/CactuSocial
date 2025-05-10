@@ -234,7 +234,6 @@ def comment(request, post_id):
 @login_required
 @require_POST
 def comment_reply(request, comment_id):
-    # TODO
     try: # Ensure comment exists
         comment = Comment.objects.get(id=comment_id)
     except Comment.DoesNotExist:
@@ -255,8 +254,9 @@ def comment_reply(request, comment_id):
         "message": "Reply posted successfully!",
         "comment_reply": {
             "username": comment_reply.profile.user.username,
+            "recipient_username": comment.profile.user.username,
             "text": comment_reply.text,
-            "timestamp": comment.timestamp,
+            "timestamp": comment_reply.timestamp
         }})
 
 

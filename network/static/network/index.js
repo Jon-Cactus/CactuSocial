@@ -224,35 +224,47 @@ document.addEventListener('DOMContentLoaded', function() {
                 event.preventDefault();
                 const replyText = replyForm.querySelector('.reply-text').value;
                 const commentId = replyForm.querySelector('.submit-reply-btn').dataset.id;
-                const repliesDiv = replyForm.closest('.replies-div');
+                const replySectionDiv = replyForm.closest('.reply-section-div');
+                const repliesDiv = replySectionDiv.querySelector('.replies-div');
 
                 const result = await commentReply(commentId, replyText);
                 if (result.success) {
                     /* Generate new comment via DOM manipulation to update UI */
                     // Create reply div
                     const replyDiv = document.createElement('div');
-                    replyDiv.classList.add('.reply-div');
+                    replyDiv.classList.add('reply-div');
                     // Create reply header div
                     const replyHeaderDiv = document.createElement('div');
-                    replyHeaderDiv.classList.add('.reply-header-div');
-                    //Create link to user's profile
+                    replyHeaderDiv.classList.add('reply-header-div');
+                    // Create span element to contain profile link and replying to text
+                    const replyHeader = document.createElement('span');
+                    replyHeader.classList.add('reply-header');
+                    //Create link to user's profile and replying to text
                     const profileLink = document.createElement('a');
-                    profileLink.classList.add('post-header-text');
+                    profileLink.classList.add('post-header-txt');
                     profileLink.href = `/profile/${result.commentReply.username}`;
-                    replyHeaderDiv.appendChild(profileLink);
+                    profileLink.textContent = result.commentReply.username;
+                    const recipientUserText = document.createElement('p');
+                    recipientUserText.textContent = `replying to: ${result.commentReply.recipient_username}`
+
+                    replyHeader.appendChild(profileLink);
+                    replyHeader.appendChild(recipientUserText);
+                    replyHeaderDiv.appendChild(replyHeader);
                     // Create timestamp
                     const timestamp = document.createElement('p');
-                    timestamp.classList.add('.timestamp-txt');
-                    timestamp.textContent = new Date(result.commentReply.timestamp).toLocaleString().at;
+                    timestamp.classList.add('timestamp-txt');
+                    timestamp.textContent = new Date(result.commentReply.timestamp).toLocaleString();
                     replyHeaderDiv.appendChild(timestamp);
                     
                     replyDiv.appendChild(replyHeaderDiv);
                     // Create reply text
                     const replyTextElement = document.createElement('p');
-                    replyText.textContent = result.commentReply.text;
+                    replyTextElement.textContent = result.commentReply.text;
                     replyDiv.appendChild(replyTextElement);
                     // Insert replyDiv to the replies container
                     repliesDiv.prepend(replyDiv);
+                } else {
+                    replyForm.querySelector('.reply-error-message').textContent = result.error;
                 }
             })
         })
