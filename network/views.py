@@ -264,7 +264,6 @@ def comment_reply(request, comment_id):
 @login_required
 @require_POST
 def like_comment(request, comment_id):
-    # TODO
     try: # Ensure comment exists
         comment = Comment.objects.get(id=comment_id)
     except Comment.DoesNotExist:
@@ -283,17 +282,16 @@ def like_comment(request, comment_id):
 @login_required
 @require_http_methods(["DELETE"])
 def unlike_comment(request, comment_id):
-    # TODO
     try: # Ensure comment exists
         comment = Comment.objects.get(id=comment_id)
     except Comment.DoesNotExist:
         return JsonResponse({"error": "Comment not found"}, status=404)
     
     profile = request.user.profile
-    comment.likes.add(profile)
+    comment.likes.remove(profile)
 
     return JsonResponse({
-        "messsage": "Unliked comment!",
+        "message": "Unliked comment!",
         "is_liked": False,
         "like_count": comment.like_count}, status=200)
           

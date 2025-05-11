@@ -120,23 +120,22 @@ document.addEventListener('DOMContentLoaded', function() {
                         editFormDiv.innerHTML = '';
                         postTextDiv.style.display = 'block';
                         editBtn.style.display = 'block';
-                    })
+                    });
                 }
             });
         });
         // Handle likes
-        postsDiv.querySelectorAll('.post-like-btn').forEach(element => {
+        postsDiv.querySelectorAll('.post-like-btn').forEach(postLikeBtn => {
             // Change to broken heart emoji when hovering over the dislike button
-            element.addEventListener('mouseenter', () => {
-                element.innerText = (element.dataset.liked === 'true') ? '💔' : '❤️';
+            postLikeBtn.addEventListener('mouseenter', () => {
+                postLikeBtn.innerText = postLikeBtn.dataset.liked === 'true' ? '💔' : '❤️';
             });
-            element.addEventListener('mouseleave', () => {
-                element.innerText = '❤️';
-            })
+            postLikeBtn.addEventListener('mouseleave', () => {
+                postLikeBtn.innerText = '❤️';
+            });
 
-            element.addEventListener('click', async (event) => {
-                // Object destructuring learned from WebDevSimplified: # https://www.youtube.com/watch?v=NIq3qLaHCIs&t=424s
-                const { id: postId } = event.target.dataset;
+            postLikeBtn.addEventListener('click', async (event) => {
+                const postId = event.target.dataset.id;
                 // Disable button to protect from spam clicks
                 event.target.disabled = true;
 
@@ -163,8 +162,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
         // Handle comment submission
-        /* TODO: investigate why this is querySelectorAll and not querySelector. Probably can do
-        postsDiv.querySelector('.comment-form').addEventListener('submit'.... */
         postsDiv.querySelectorAll('.comment-form').forEach(commentForm => {
             commentForm.addEventListener('submit', async (event) => {
                 event.preventDefault();
@@ -208,8 +205,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     commentForm.querySelector('.comment-error-message').textContent = result.error;
                 }
-            })
-        })
+            });
+        });
         postsDiv.querySelectorAll('.reply-btn').forEach(element => {
             element.addEventListener('click', (event) => {
                 const commentDiv = event.target.closest('.comment-div');
@@ -217,8 +214,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Toggle display of reply section
                 replySectionDiv.style.display = replySectionDiv.style.display === 'none' ? 'block' : 'none';
                 element.innerText = replySectionDiv.style.display === 'none' ? `Load ${element.dataset.replycount} replies` : 'Hide';
-            })
-        })
+            });
+        });
         postsDiv.querySelectorAll('.reply-form').forEach(replyForm => {
             replyForm.addEventListener('submit', async (event) => {
                 event.preventDefault();
@@ -245,7 +242,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     profileLink.href = `/profile/${result.commentReply.username}`;
                     profileLink.textContent = result.commentReply.username;
                     const recipientUserText = document.createElement('p');
-                    recipientUserText.textContent = `replying to: ${result.commentReply.recipient_username}`
+                    recipientUserText.textContent = `replying to: ${result.commentReply.recipient_username}`;
 
                     replyHeader.appendChild(profileLink);
                     replyHeader.appendChild(recipientUserText);
@@ -266,12 +263,33 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     replyForm.querySelector('.reply-error-message').textContent = result.error;
                 }
+            });
+        });
+        postsDiv.querySelectorAll('.comment-like-btn').forEach(likeBtn => {
+            likeBtn.addEventListener('mouseenter', () => {
+                likeBtn.innerText = likeBtn.dataset.liked === 'true' ? '💔' : '❤️';
             })
-        })
-    }
-    
+            likeBtn.addEventListener('mouseleave', () => {
+                likeBtn.innerText = '❤️';
+            })
+            likeBtn.addEventListener('click', async (event) => {
+                event.target.disabled = true;
+                const commentId = likeBtn.dataset.id;
+                const isLiked = likeBtn.dataset.liked === 'true';
+                console.log(isLiked)
+                const result = await toggleLikeComment(commentId, isLiked);
+                if (result.success) {
+                    likeBtn.dataset.liked = result.isLiked;
+                    const likeCount = event.target.closest('.interact-div').querySelector('.like-count');
+                    likeCount.textContent = result.likeCount;
+                } else {
+                    console.log('Error: ', result.error);
+                }
+                event.target.disabled = false;
+            });
+        });
+    };
 });
-
 /*API Endpoints*/
 
 const post = async () => {
@@ -320,6 +338,7 @@ const editPost = async (postId, updatedContent) => {
 }
 
 const toggleLikePost = async (postId) => {
+    // TODO: refactor to utilize two views; one for liking and one for unliking
     try {
         const response = await fetch(`/post/${postId}/like`, {
             method: 'POST',
@@ -327,8 +346,8 @@ const toggleLikePost = async (postId) => {
         const data = await response.json();
         if (response.ok) {
             return {
-                message: data.message,
                 success: true,
+                message: data.message,
                 isLiked: data.is_liked,
                 likeCount: data.like_count
             }
@@ -381,6 +400,33 @@ const commentReply = async (commentId, text) => {
     }
 }
 
+const toggleLikeComment = async (commentId, isLiked) => {
+    try {
+        const method = isLiked ? 'DELETE' : 'POST';
+        const endpoint = isLiked ? `comment/${commentId}/unlike` : `comment/${commentId}/like`;
+        const response = await fetch(endpoint, {
+            method: method,
+        });
+        const data = await response.json();
+        if (response.ok) {
+            return {
+                success: true,
+                message: data.message,
+                isLiked: data.is_liked,
+                likeCount: data.like_count
+            }
+        } else {
+            return {
+                success: false,
+                error: data.error
+            }
+        }
+    } catch (error) {
+        console.log('Error', error);
+        return { success: false, error: error.message }
+    }
+}
+
 const toggleFollow = async (username, isFollowing) => {
     try {
         // const isFollowingBool = isFollowing === 'true';
@@ -392,8 +438,8 @@ const toggleFollow = async (username, isFollowing) => {
         const data = await response.json();
         if (response.ok) {
             return {
-                message: data.message,
                 success: true,
+                message: data.message,
                 following: data.following,
                 followerCount: data.follower_count
             };
