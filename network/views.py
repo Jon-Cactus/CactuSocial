@@ -31,7 +31,7 @@ def post_paginator(request, query, template, title, **kwargs):
 def index(request):
     return post_paginator(
         request,
-        # https://docs.djangoproject.com/en/5.1/ref/models/querysets/#select-related , acts like an SQL `JOIN` for M
+        # https://docs.djangoproject.com/en/5.1/ref/models/querysets/#select-related , acts like an SQL `JOIN` for Models
         query=Post.objects.select_related("profile").order_by("-timestamp"),
         template="network/index.html",
         title="All Posts",
@@ -133,13 +133,13 @@ def share_post(request):
     content = data.get("content", "").strip() # isolate content
     if not content:
         return JsonResponse({"error": "Can't share empty posts!"}, status=400)
-    
+    # create and save post
     post = Post(profile=request.user.profile, content=content)
     try:
         post.save()
     except Exception as e:
         return JsonResponse({"error": f"Failed to save post: {str(e)}"}, status=500)
-
+    # TODO: update so that this sends the necessary inforamtion back in order to update the UI without refresh
     return JsonResponse({"message": "Post shared successfully.",
                          "post_id": post.id}, status=201)
 
@@ -196,7 +196,7 @@ def like_post(request, post_id):
                          "is_liked": True,
                          "like_count": post.like_count}, status=200)
 
-# TODO: unlike_post
+# TODO: refactor unlike_post to be a separate function
 
 @csrf_exempt
 @login_required
