@@ -1,8 +1,3 @@
-"""
-Used as a source for status codes:
-https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status
-"""
-
 import json
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -12,7 +7,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST, require_http_methods #https://docs.djangoproject.com/en/5.2/topics/http/decorators
+from django.views.decorators.http import require_POST, require_http_methods
 from django.utils import timezone
 from .models import User, Profile, Post, Comment, CommentReply
 
@@ -31,7 +26,6 @@ def post_paginator(request, query, template, title, **kwargs):
 def index(request):
     return post_paginator(
         request,
-        # https://docs.djangoproject.com/en/5.1/ref/models/querysets/#select-related , acts like an SQL `JOIN` for Models
         query=Post.objects.select_related("profile").order_by("-timestamp"),
         template="network/index.html",
         title="All Posts",
@@ -122,7 +116,6 @@ def register(request):
 API endpoints
 """
 
-@csrf_exempt
 @login_required
 def share_post(request):
     if request.method != "POST":
@@ -139,11 +132,10 @@ def share_post(request):
         post.save()
     except Exception as e:
         return JsonResponse({"error": f"Failed to save post: {str(e)}"}, status=500)
-    # TODO: update so that this sends the necessary inforamtion back in order to update the UI without refresh
+    # TODO: update so that this sends the necessary information back in order to update the UI without refresh
     return JsonResponse({"message": "Post shared successfully.",
                          "post_id": post.id}, status=201)
 
-@csrf_exempt
 @login_required
 def edit_post(request, post_id):
     # Ensure this route is accessed only by PUT
@@ -175,30 +167,38 @@ def edit_post(request, post_id):
     else:
         return JsonResponse({"error": "Can't save empty posts!"}, status=400)
 
-@csrf_exempt
 @login_required
+@require_POST
 def like_post(request, post_id):
-    if request.method != "POST":
-        return JsonResponse({"error": "POST request required."}, status=400)
     try: # Ensure post exists
         post = Post.objects.get(id=post_id)
     except Post.DoesNotExist:
         return JsonResponse({"error": "Post not found"}, status=404)
-    # Add or remove the user from the post's likes
+    # Add the user to the post's likes
     profile = request.user.profile
-    if post.likes.filter(id=profile.id).exists():
-        post.likes.remove(profile)
-        return JsonResponse({"message": "Unliked post!",
-                             "is_liked": False,
-                             "like_count": post.like_count}, status=200)
     post.likes.add(profile)
+
     return JsonResponse({"message": "Liked post!",
                          "is_liked": True,
                          "like_count": post.like_count}, status=200)
 
-# TODO: refactor unlike_post to be a separate function
+@login_required
+@require_http_methods(["DELETE"])
+def unlike_post(request, post_id):
+    try: # ensure post exists
+        post = Post.objects.get(id=post_id)
+    except Post.DoesNotExist:
+        return JsonResponse({"error": "Post not found"}, status=404)
+    # remove the user's profile from the post's likes
+    profile = request.user.profile
+    post.likes.remove(profile)
 
-@csrf_exempt
+    return JsonResponse({
+        "message": "Unliked post!",
+        "is_liked": False,
+        "like_count": post.like_count}, status=200)
+
+
 @login_required
 @require_POST
 def comment(request, post_id):
@@ -230,7 +230,6 @@ def comment(request, post_id):
     })
 
 
-@csrf_exempt
 @login_required
 @require_POST
 def comment_reply(request, comment_id):
@@ -260,7 +259,6 @@ def comment_reply(request, comment_id):
         }})
 
 
-@csrf_exempt
 @login_required
 @require_POST
 def like_comment(request, comment_id):
@@ -278,7 +276,6 @@ def like_comment(request, comment_id):
         "like_count": comment.like_count}, status=200)
     
 
-@csrf_exempt
 @login_required
 @require_http_methods(["DELETE"])
 def unlike_comment(request, comment_id):
@@ -296,7 +293,6 @@ def unlike_comment(request, comment_id):
         "like_count": comment.like_count}, status=200)
           
 
-@csrf_exempt
 @login_required
 @require_POST
 def follow(request, username):
@@ -318,7 +314,6 @@ def follow(request, username):
                          "follower_count": target_user.follower_count}, status=201)
 
 
-@csrf_exempt
 @login_required
 @require_http_methods(['DELETE'])
 def unfollow(request, username):
