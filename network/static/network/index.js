@@ -1,8 +1,7 @@
-/* Please note that I have studied JavaScript under Scrimba and freeCodeCamp,
-and that I will be using some of the materials taught there */
-
+let csrfToken;
 
 document.addEventListener('DOMContentLoaded', function() {
+    csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     // Gain control of necessary DOM elements
     const postForm = document.getElementById('post-form');
     const postsDiv = document.querySelector('.posts-div');
@@ -21,7 +20,6 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleFollowBtn.addEventListener('click', async (event) => {
             const username = event.target.dataset.username;
             const isFollowing = event.target.dataset.isfollowing === 'true'; // Convert to bool
-            console.log('isFollowing:', isFollowing, typeof isFollowing); // Debug
             if (!username) {
                 console.log(`Couldn't find username`);
                 return;
@@ -136,14 +134,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
             postLikeBtn.addEventListener('click', async (event) => {
                 const postId = event.target.dataset.id;
+                const isLiked = event.target.dataset.liked === 'true';
                 // Disable button to protect from spam clicks
                 event.target.disabled = true;
 
-                const result = await toggleLikePost(postId);
+                const result = await toggleLikePost(postId, isLiked);
                 if (result.success) {
+                    // update like count UI
                     const likeCount = event.target.closest('.post-div').querySelector('.like-count');
                     likeCount.textContent = result.likeCount;
-
+                    // 
                     event.target.dataset.liked = result.isLiked;
                 } else {
                     // TODO: change to error div
@@ -301,6 +301,10 @@ const post = async () => {
         }
         const response = await fetch('/post', {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
             body: JSON.stringify({
                 content: content
             })
@@ -309,11 +313,14 @@ const post = async () => {
         if (response.ok) {
             document.querySelector('#content').value = '';
             console.log('Post shared successfully!');
+            return { success: true };
+        } else {
+            return {success: false, error: data.error };
         }
     } catch (error) {
         console.error('Fetch error:', error);
         alert('Failed to submit post. Check console for details.');
-        return false;
+        return { success: false, error: error.message };
     }
 }
 
@@ -321,6 +328,10 @@ const editPost = async (postId, updatedContent) => {
     try {
         const response = await fetch(`/post/${postId}`, {
             method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
             body: JSON.stringify({
                 updatedContent: updatedContent,
             })
@@ -337,11 +348,16 @@ const editPost = async (postId, updatedContent) => {
     }
 }
 
-const toggleLikePost = async (postId) => {
-    // TODO: refactor to utilize two views; one for liking and one for unliking
+const toggleLikePost = async (postId, isLiked) => {
     try {
-        const response = await fetch(`/post/${postId}/like`, {
-            method: 'POST',
+        // determine correct method and endpoint
+        const method = isLiked ? 'DELETE' : 'POST';
+        const endpoint = isLiked ? `/post/${postId}/unlike` : `/post/${postId}/like`;
+        const response = await fetch(endpoint, {
+            method: method,
+            headers: {
+                'X-CSRFToken': csrfToken
+            }
         });
         const data = await response.json();
         if (response.ok) {
@@ -364,6 +380,10 @@ const comment = async (postId, content) => {
     try {
         const response = await fetch(`/post/${postId}/comment`, {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
             body: JSON.stringify({
                 content: content
             })
@@ -384,6 +404,10 @@ const commentReply = async (commentId, text) => {
     try {
         const response = await fetch(`post/${commentId}/reply`, {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
             body: JSON.stringify({
                 text: text
             })
@@ -395,17 +419,21 @@ const commentReply = async (commentId, text) => {
             return { success: false, error: data.error };
         }
     } catch (error) {
-        console.log('Error:', error)
+        console.error('Error:', error)
         return { success: false, error: 'Failed to post reply' };
     }
 }
 
 const toggleLikeComment = async (commentId, isLiked) => {
     try {
+        // determine correct method and endpoint
         const method = isLiked ? 'DELETE' : 'POST';
         const endpoint = isLiked ? `comment/${commentId}/unlike` : `comment/${commentId}/like`;
         const response = await fetch(endpoint, {
             method: method,
+            headers: {
+                'X-CSRFToken': csrfToken
+            }
         });
         const data = await response.json();
         if (response.ok) {
@@ -422,18 +450,20 @@ const toggleLikeComment = async (commentId, isLiked) => {
             }
         }
     } catch (error) {
-        console.log('Error', error);
+        console.error('Error', error);
         return { success: false, error: error.message }
     }
 }
 
 const toggleFollow = async (username, isFollowing) => {
     try {
-        // const isFollowingBool = isFollowing === 'true';
         const method = isFollowing ? 'DELETE' : 'POST';
         const endpoint = isFollowing ? `/profile/${username}/unfollow` : `/profile/${username}/follow`;
-        const response = await fetch(endpoint,{
+        const response = await fetch(endpoint, {
             method: method,
+            headers: {
+                'X-CSRFToken': csrfToken
+            }
         });
         const data = await response.json();
         if (response.ok) {
