@@ -312,15 +312,14 @@ const post = async () => {
         const data = await response.json();
         if (response.ok) {
             document.querySelector('#content').value = '';
-            console.log('Post shared successfully!');
-            return { success: true };
+            alert(data.message);
+            window.location.reload();
         } else {
-            return {success: false, error: data.error };
+            alert(`Error: ${data.error}`)
         }
     } catch (error) {
         console.error('Fetch error:', error);
         alert('Failed to submit post. Check console for details.');
-        return { success: false, error: error.message };
     }
 }
 

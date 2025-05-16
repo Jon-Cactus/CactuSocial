@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST, require_http_methods
@@ -130,11 +130,10 @@ def share_post(request):
     post = Post(profile=request.user.profile, content=content)
     try:
         post.save()
+        return JsonResponse({"message": "Post shared successfully!"}, status=201)
     except Exception as e:
         return JsonResponse({"error": f"Failed to save post: {str(e)}"}, status=500)
-    # TODO: update so that this sends the necessary information back in order to update the UI without refresh
-    return JsonResponse({"message": "Post shared successfully.",
-                         "post_id": post.id}, status=201)
+
 
 @login_required
 def edit_post(request, post_id):
