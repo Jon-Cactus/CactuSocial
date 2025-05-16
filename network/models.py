@@ -61,7 +61,7 @@ class Comment(models.Model): # TODO
         return self.likes.count()
 
     class Meta:
-        ordering = ['-timestamp'] #https://docs.djangoproject.com/en/5.2/ref/models/options/#ordering
+        ordering = ['-timestamp']
 
 class CommentReply(models.Model):
     comment = models.ForeignKey("Comment", on_delete=models.CASCADE, related_name="replies")

@@ -4,12 +4,13 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST, require_http_methods
 from django.utils import timezone
 from .models import User, Profile, Post, Comment, CommentReply
+from .forms import ProfileForm
 
 # Tool for generating views
 def post_paginator(request, query, template, title, **kwargs):
@@ -108,13 +109,41 @@ def register(request):
                 "message": "Username already taken."
             })
         login(request, user)
-        return HttpResponseRedirect(reverse("index"))
+        return HttpResponseRedirect(reverse("profile_setup"))
     else:
         return render(request, "network/register.html")
+    
+
+def profile_setup(request):
+    if request.method == "POST":
+        form = ProfileForm(request.POST, request.FILES, instance=request.user.profile)
+        if form.is_valid():
+            form.save()
+            return redirect("index")
+    else:
+        form = ProfileForm(instance=request.user.profile)
+    return render(request, "profile_setup.html", {"form": form})
+    
 
 """
 API endpoints
 """
+
+@login_required
+def update_profile(request):
+    if request.method == "POST" or "PUT":
+        form = ProfileForm(request.POST, request.FILES, instance=request.user.profile)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({
+                "success": True,
+                "profile_picture_url": request.user.profile.profile_picture_url if request.user.profile.profile_picture_url else None,
+                "bio": request.user.profile.bio if request.user.profile.bio else None
+            })
+        else:
+            return JsonResponse({"success": False, "errors": form.errors})
+    return JsonResponse({"success": False, "error": "Invalid request method"}, status=400)
+
 
 @login_required
 def share_post(request):

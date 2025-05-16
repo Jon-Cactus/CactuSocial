@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block title %}Set Up Your Profile{% endblock %}
+{% block body %}
+    <div class="post-div">
+        <form method="post" enctype="multipart/form-data">
+            {{ csrf_token }}
+            {{ form.as_p }}
+            <button type="submit">Save</button>
+            <a href="{% url 'profile' username=user.username %}">Skip</a>
+        </form>
+    </div>
+{% endblock %}
