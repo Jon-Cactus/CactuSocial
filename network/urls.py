@@ -6,12 +6,12 @@ from . import views
 
 urlpatterns = [
     path("", views.index, name="index"),
-    path("login", views.login_view, name="login"),
-    path("logout", views.logout_view, name="logout"),
-    path("register", views.register, name="register"),
-    path("following", views.following_posts, name="following_posts"),
-    path("profile/<str:username>", views.profile, name="profile"),
-    path("profile/setup", views.profile_setup, name="profile_setup"),
+    path("login/", views.login_view, name="login"),
+    path("logout/", views.logout_view, name="logout"),
+    path("register/", views.register, name="register"),
+    path("following/", views.following_posts, name="following_posts"),
+    path("profile/<str:username>/", views.profile, name="profile"),
+    path("profile/setup/", views.profile_setup, name="profile_setup"),
 
     # API Routes
     path("post", views.share_post, name="post"),
