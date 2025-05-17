@@ -3,6 +3,10 @@
     box-sizing: border-box;
 }
 
+a {
+    color: #c3a6ff;
+}
+
 button:focus, a:focus {
     outline: none;
 }
@@ -20,24 +24,67 @@ button:focus, a:focus {
     min-height: 100vh;
 }
 
+.header {
+    border: 1px solid orange;
+
+}
+
 .header-div {
     /*border: 1px solid yellow;*/
 }
 
 .header-txt {
     align-self: flex-start;
-    margin-left: 15px;
     width: 550px;
+    color: #5ccfe6;
 }
 
-.post-header-txt {
+.profile-header-txt {
+    margin-left: 10px;
+    white-space: nowrap;
+    overflow: visible;
     color: #5ccfe6;
 }
 
 .profile-card {
-    border: 1px solid green;
-    min-width: 550px;
-    min-height: 100px;
+    border-radius: 15px;
+    /*border: 1px solid green;*/
+    width: 550px;
+    min-height: 250px;
+    background-color: #2f3b54;
+}
+
+.profile-header {
+    align-items: center;
+}
+
+.profile-picture {
+    border-radius: 100px;
+    height: 125px;
+    width: 125px;
+    margin: 10px;
+}
+
+.counts {
+    display: flex;
+    justify-content: space-evenly;
+    text-align: center;
+    flex-grow: 1;
+    /*border: 1px solid turquoise;*/
+    font-size: 1.5rem;
+}
+
+.counts p {
+    margin: 25px 0 0 0;
+    font-weight: 500;
+}
+
+.bio {
+    padding: 5px 10px 0px 10px;
+    margin: 0px;
+    /*border: 1px solid purple;*/
+    overflow-y: auto;
+    word-wrap: break-word;
 }
 
 .post-form {
@@ -56,6 +103,7 @@ button:focus, a:focus {
 
 .posts-div {
     /*border: 1px solid red;*/
+    flex-grow: 1;
 }
 
 .post-div {
@@ -63,21 +111,28 @@ button:focus, a:focus {
     width: 550px;
     background-color: #2f3b54;
     margin-top: 15px;
-    padding: 3px 0 1px 15px;
+    padding: 6px 0 1px 15px;
     /*border: 1px solid orange;*/
 }
 
+.card {
+    border-radius: 15px;
+    width: 550px;
+    background-color: #2f3b54;
+    margin-top: 15px;
+    padding: 3px 0 1px 15px;
+}
+
 .post-btn {
-    background-color: #5ccfe6;
+    background-color: #ff903c;
     border: none;
     border-radius: 6px;
     padding: 5px 10px 5px 10px;
+    margin: 0px 0px 10px 0px;
     font-weight: 600;
 }
 
-.comment-btn {
-    margin: 5px;
-}
+
 
 .submit-comment-btn {
     background-color: #ff903c;
@@ -109,9 +164,13 @@ button:focus, a:focus {
 }
 
 .comment-edit-btn, .edit-btn {
-    color: whitesmoke;
     background-color: #2f3b54;
     border: none;
+    color: #c3a6ff;
+}
+
+a.edit-btn {
+    margin: 10px;
 }
 
 .edit-btn:hover {
@@ -123,20 +182,27 @@ button:focus, a:focus {
     /*border: 1px solid green;*/
     display: inline-flex;
     align-items: center;
+    margin: 4px 0px 5px 0px;
 }
 
 .count {
     margin-right: 10px;
 }
 
-.post-interact-btn, .edit-btn {
+.post-interact-btn {
     border: none;
     background-color: inherit;
-    color: #c3a6ff;
+    font-size: 1.3rem;
 }
 
 .timestamp-txt {
     font-size: 0.7rem;
     color: grey;
     margin: 0;
+}
+
+/* Utility */
+
+.flex {
+    display: flex;
 }
