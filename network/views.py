@@ -53,7 +53,7 @@ def profile(request, username):
 
     return post_paginator(
         request,
-        query=user_obj.profile.post_set.select_related("profile").order_by("-timestamp"),
+        query=user_obj.profile.posts.select_related("profile").order_by("-timestamp"),
         template="network/profile.html",
         title=f"{user_obj.username}'s Profile",
         user_obj=user_obj,
@@ -122,7 +122,7 @@ def profile_setup(request):
             return redirect("index")
     else:
         form = ProfileForm(instance=request.user.profile)
-    return render(request, "profile_setup.html", {"form": form})
+    return render(request, "network/profile_setup.html", {"form": form})
     
 
 """

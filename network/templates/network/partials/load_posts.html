@@ -1,7 +1,7 @@
 <div class="posts-div">
     {% for post in page_obj %}
         <div class="post-div">
-            <h3><a class="post-header-txt" href="{% url 'profile' username=post.profile.user.username %}">{{ post.profile.user.username }}</a></h3>
+            <h3><a class="header-txt" href="{% url 'profile' username=post.profile.user.username %}">{{ post.profile.user.username }}</a></h3>
             <div class="post-text-div">
                 <p class="post-text">{{ post.content }}</p>
             </div>
@@ -44,7 +44,7 @@
                     {% for comment in post.comment_set.all %}
                         <div class="comment-div">
                             <div class="comment-header-div">
-                                <a class="post-header-txt" href="{% url 'profile' username=comment.profile.user.username %}">{{ comment.profile.user.username }}</a>
+                                <a class="header-txt" href="{% url 'profile' username=comment.profile.user.username %}">{{ comment.profile.user.username }}</a>
                                 <p class="timestamp-txt">{{ comment.timestamp }}</p>
                             </div>
                             <p>{{ comment.text }}</p>
@@ -86,7 +86,7 @@
                                         <div class="reply-div">
                                             <div class="reply-header-div">
                                                 <span class="reply-header">
-                                                    <a class="post-header-txt" href="{% url 'profile' username=reply.profile.user.username %}">{{ reply.profile.user.username }}</a>
+                                                    <a class="header-txt" href="{% url 'profile' username=reply.profile.user.username %}">{{ reply.profile.user.username }}</a>
                                                     <p>replying to: {{ comment.profile.user.username }}</p>
                                                 </span>
                                                 <p class="timestamp-txt">{{ reply.timestamp }}</p>
