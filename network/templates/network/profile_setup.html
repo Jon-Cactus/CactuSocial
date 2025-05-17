@@ -1,0 +1,18 @@
+{% extends "network/layout.html" %}
+{% load static %}
+{% block title %}Set Up Your Profile{% endblock %}
+{% block body %}
+    <div class="card">
+        <h2 class="header-txt">Customize your profile</h2>
+        <form id="edit-profile-form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <p><span id="char-count">0</span>/512</p>
+            <button class="submit-comment-btn" type="submit">Save</button>
+            <a href="{% url 'profile' username=user.username %}">Skip</a>
+        </form>
+    </div>
+{% endblock %}
+{% block script %}
+    <script src="{% static 'network/index.js' %}"></script>
+{% endblock %}

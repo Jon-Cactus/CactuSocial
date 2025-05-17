@@ -1,6 +1,7 @@
 
 from django.urls import path
-
+from django.conf import settings
+from django.conf.urls.static import static
 from . import views
 
 urlpatterns = [
@@ -8,6 +9,7 @@ urlpatterns = [
     path("login/", views.login_view, name="login"),
     path("logout/", views.logout_view, name="logout"),
     path("register/", views.register, name="register"),
+    path("register/setup/", views.profile_setup, name="profile_setup"),
     path("following/", views.following_posts, name="following_posts"),
     path("profile/<str:username>/", views.profile, name="profile"),
 
@@ -23,4 +25,4 @@ urlpatterns = [
     path("post/<int:comment_id>/reply", views.comment_reply, name="comment_reply"),
     path("comment/<int:comment_id>/like", views.like_comment, name="like_comment"),
     path("comment/<int:comment_id>/unlike", views.unlike_comment, name="unlike_comment")
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

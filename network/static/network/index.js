@@ -6,9 +6,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const postForm = document.getElementById('post-form');
     const postsDiv = document.querySelector('.posts-div');
     const toggleFollowBtn = document.getElementById('toggle-follow-btn');
+    const editProfileForm = document.getElementById('edit-profile-form');
 
     // Handle post form submission
     if (postForm) {
+        const postContent = document.getElementById('post-content');
+        const charCount = document.getElementById('char-count');
+        postContent.addEventListener('input', () => {
+            charCount.textContent = postContent.value.length;
+        })
         postForm.addEventListener('submit', function(e) {
             e.preventDefault();
             post();
@@ -181,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     commentHeaderDiv.classList.add('comment-header-div');
                     // Create link to user's profile
                     const profileLink = document.createElement('a');
-                    profileLink.classList.add('post-header-txt');
+                    profileLink.classList.add('header-txt');
                     profileLink.href = `/profile/${result.comment.username}`;
                     profileLink.textContent = result.comment.username;
                     commentHeaderDiv.appendChild(profileLink);
@@ -238,7 +244,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     replyHeader.classList.add('reply-header');
                     //Create link to user's profile and replying to text
                     const profileLink = document.createElement('a');
-                    profileLink.classList.add('post-header-txt');
+                    profileLink.classList.add('header-txt');
                     profileLink.href = `/profile/${result.commentReply.username}`;
                     profileLink.textContent = result.commentReply.username;
                     const recipientUserText = document.createElement('p');
@@ -289,12 +295,19 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     };
+    if (editProfileForm) {
+        const bio = document.getElementById('id_bio');
+        const charCount = document.getElementById('char-count');
+        bio.addEventListener('input', () => {
+            charCount.textContent = bio.value.length;
+        })
+    }
 });
 /*API Endpoints*/
 
 const post = async () => {
     try {
-        const content = document.getElementById('content').value;
+        const content = document.getElementById('post-content').value;
         if (!content) {
             alert('Post content cannot be empty!');
             return;

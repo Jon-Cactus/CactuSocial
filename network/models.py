@@ -22,6 +22,10 @@ class Profile(models.Model):
         return self.followers.count()
     
     @property
+    def post_count(self):
+        return self.posts.count()
+    
+    @property
     def display_picture(self):
         if self.profile_picture:
             return self.profile_picture.url
@@ -30,7 +34,7 @@ class Profile(models.Model):
         return '/static/images/default_pic.jpg' # Default if user has not uploaded a picture
 
 class Post(models.Model):
-    profile = models.ForeignKey("Profile", on_delete=models.CASCADE)
+    profile = models.ForeignKey("Profile", on_delete=models.CASCADE, related_name="posts")
     content = models.TextField(blank=False, null=False)
     likes = models.ManyToManyField("Profile", blank=True, related_name="liked_posts")
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -61,7 +65,7 @@ class Comment(models.Model): # TODO
         return self.likes.count()
 
     class Meta:
-        ordering = ['-timestamp'] #https://docs.djangoproject.com/en/5.2/ref/models/options/#ordering
+        ordering = ['-timestamp']
 
 class CommentReply(models.Model):
     comment = models.ForeignKey("Comment", on_delete=models.CASCADE, related_name="replies")

@@ -8,7 +8,8 @@
     <div class="post-div">
         <form id="post-form">
             <h3>New Post</h3>
-            <textarea class="form-textarea" id="content" rows="5" cols="50" {% if  not request.user.is_authenticated %}placeholder="Login to post!" disabled{% endif %} required></textarea>
+            <textarea class="form-textarea" id="post-content" rows="5" cols="50" {% if  not request.user.is_authenticated %}placeholder="Login to post!" disabled{% endif %} maxlength="512" required></textarea>
+            <p><span id="char-count">0</span>/512</p>
             <div>
                 <button id="post-btn" class="post-btn"{% if not request.user.is_authenticated %}disabled{% endif %}>Post</button>
             </div>
