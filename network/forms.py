@@ -8,10 +8,16 @@ class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['profile_picture', 'profile_picture_url', 'bio']
+        widgets = {
+            'bio': forms.Textarea(attrs={'rows': 5, 'cols': 50, 'maxlength': 512}),
+        }
     
     def clean_profile_picture(self):
-        picture = self.cleaned_data
+        picture = self.cleaned_data.get('profile_picture')
         if picture:
+            # check file size
+            if picture.size > 8 * 1024 * 1024:
+                raise forms.ValidationError("Image file too large (max 5MB).")
             img = Image.open(picture)
             img = img.resize((200, 200), Image.LANCZOS)
             output = io.BytesIO()
