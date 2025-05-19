@@ -7,9 +7,11 @@
         <form id="edit-profile-form" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {{ form.as_p }}
-            <p><span id="char-count">0</span>/512</p>
-            <button class="submit-comment-btn" type="submit">Save</button>
-            <a href="{% url 'profile' username=user.username %}">Skip</a>
+            <div class="char-count-div">
+                <button class="btn-base submit-btn" type="submit">Save</button>
+                <a href="{% url 'profile' username=user.username %}">Skip</a>
+                <p><span id="char-count">0</span>/512</p>
+            </div>
         </form>
     </div>
 {% endblock %}

@@ -1,13 +1,23 @@
+:root {
+    --primary: #5ccfe6;
+    --secondary: #c3a6ff;
+    --background: #1d2433;
+    --light-background: #2f3b54;
+    --dark-background: #171c28;
+    --submit-btn: #bae67e;
+    --cancel-btn: #ff903c;
+}
+
 * {
     margin: 0;
     box-sizing: border-box;
 }
 
 a {
-    color: #c3a6ff;
+    color: var(--secondary);
 }
 
-button:focus, a:focus {
+button:focus, a:focus, textarea:focus {
     outline: none;
 }
 
@@ -16,7 +26,7 @@ button:focus, a:focus {
 }
 
 .body {
-    background-color: #1d2433;
+    background-color: var(--background);
     color: whitesmoke;
     display: flex;
     flex-direction: column;
@@ -36,22 +46,26 @@ button:focus, a:focus {
 .header-txt {
     align-self: flex-start;
     width: 550px;
-    color: #5ccfe6;
+    color: var(--primary);
 }
 
 .profile-header-txt {
-    margin-left: 10px;
     white-space: nowrap;
     overflow: visible;
-    color: #5ccfe6;
+    color: var(--primary);
+}
+
+.card {
+    border-radius: 15px;
+    width: 550px;
+    margin-top: 15px;
+    padding: 3px 0 1px 15px;
+    background-color: var(--light-background);
 }
 
 .profile-card {
-    border-radius: 15px;
     /*border: 1px solid green;*/
-    width: 550px;
     min-height: 250px;
-    background-color: #2f3b54;
 }
 
 .profile-header {
@@ -62,7 +76,7 @@ button:focus, a:focus {
     border-radius: 100px;
     height: 125px;
     width: 125px;
-    margin: 10px;
+    margin: 10px 0px 0px 0px;
 }
 
 .counts {
@@ -80,7 +94,7 @@ button:focus, a:focus {
 }
 
 .bio {
-    padding: 5px 10px 0px 10px;
+    padding: 5px 5px 0px 5px;
     margin: 0px;
     /*border: 1px solid purple;*/
     overflow-y: auto;
@@ -92,8 +106,9 @@ button:focus, a:focus {
 }
 
 .form-textarea {
-    background-color: #171c28;
+    background-color: #8695b7;
     color: whitesmoke;
+    /*opacity: .5;*/
     padding: 3px 10px;
     border-radius: 10px;
     border: none;
@@ -109,42 +124,36 @@ button:focus, a:focus {
 .post-div {
     border-radius: 15px;
     width: 550px;
-    background-color: #2f3b54;
+    background-color: var(--light-background);
     margin-top: 15px;
     padding: 6px 0 1px 15px;
     /*border: 1px solid orange;*/
 }
 
-.card {
-    border-radius: 15px;
-    width: 550px;
-    background-color: #2f3b54;
-    margin-top: 15px;
-    padding: 3px 0 1px 15px;
-}
-
-.post-btn {
-    background-color: #ff903c;
+.btn-base {
     border: none;
     border-radius: 6px;
     padding: 5px 10px 5px 10px;
-    margin: 0px 0px 10px 0px;
+    margin: 0px 10px 10px 0px;
     font-weight: 600;
 }
 
+.submit-btn {
+    background-color: var(--submit-btn);
+}
 
-
-.submit-comment-btn {
-    background-color: #ff903c;
-    border: none;
-    border-radius: 6px;
-    padding-left: 15px;
-    margin: 10px;
-    padding: 5px 10px 5px 10px;
-    font-weight: 600;
+.cancel-btn {
+    background-color: var(--cancel-btn);
 }
 
 .comments-div {
+}
+
+.comment-div {
+    margin: 0 15px 6px 0;
+    border-radius: 15px;
+    padding: 6px 0 1px 15px;
+    background-color: var(--dark-background);
 }
 
 /* testing */
@@ -163,18 +172,34 @@ button:focus, a:focus {
     /*border: 1px solid red;*/
 }
 
-.comment-edit-btn, .edit-btn {
-    background-color: #2f3b54;
+
+
+/* buttons */
+
+.edit-btn {
+    background-color: var(--light-background);
     border: none;
     color: #c3a6ff;
 }
 
+.comment-edit-btn, .reply-btn {
+    background-color: var(--dark-background);
+    color: #c3a6ff;
+    border: none;
+}
+
 a.edit-btn {
-    margin: 10px;
+    margin: 5px;
 }
 
 .edit-btn:hover {
     cursor: pointer;
+}
+
+.post-interact-btn {
+    border: none;
+    background-color: inherit;
+    font-size: 1.3rem;
 }
 
 .interact-div {
@@ -189,10 +214,10 @@ a.edit-btn {
     margin-right: 10px;
 }
 
-.post-interact-btn {
-    border: none;
-    background-color: inherit;
-    font-size: 1.3rem;
+.char-count-div {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px 0 0;
 }
 
 .timestamp-txt {

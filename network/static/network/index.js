@@ -14,6 +14,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const charCount = document.getElementById('char-count');
         postContent.addEventListener('input', () => {
             charCount.textContent = postContent.value.length;
+            if (postContent.value.length === 512) {
+                charCount.style.color = '#ff903c';
+            }
         })
         postForm.addEventListener('submit', function(e) {
             e.preventDefault();
@@ -85,12 +88,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     const div = document.createElement('div');
                     // Create save button
                     const saveBtn = document.createElement('button');
-                    saveBtn.classList.add('btn', 'btn-primary');
+                    saveBtn.classList.add('btn-base', 'submit-btn');
                     saveBtn.id = 'edit-post-save-btn';
                     saveBtn.textContent = 'Save';
                     // Create cancel button
                     const cancelBtn = document.createElement('a');
-                    cancelBtn.classList.add('btn', 'btn-outline-secondary');
+                    cancelBtn.classList.add('btn-base', 'cancel-btn');
                     cancelBtn.id = 'edit-post-cancel-btn';
                     cancelBtn.textContent = 'Cancel';
                     // Append buttons to div
@@ -171,7 +174,7 @@ document.addEventListener('DOMContentLoaded', function() {
         postsDiv.querySelectorAll('.comment-form').forEach(commentForm => {
             commentForm.addEventListener('submit', async (event) => {
                 event.preventDefault();
-                const content = commentForm.querySelector('.comment-content').value;
+                const content = commentForm.querySelector('.comment-text').value;
                 const postId = commentForm.querySelector('.submit-comment-btn').dataset.id;
                 const postDiv = commentForm.closest('.post-div');
                 const commentsDiv = commentForm.closest('.comment-section-div').querySelector('.comments-div');
@@ -205,13 +208,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Insert new comment at the top of the comments section
                     commentsDiv.prepend(commentDiv);
                     
-                    commentForm.querySelector('.comment-content').value = '';
+                    commentForm.querySelector('.comment-text').value = '';
                     const commentCount = postDiv.querySelector('.comment-count');
                     commentCount.textContent = parseInt(commentCount.textContent) + 1;
                 } else {
                     commentForm.querySelector('.comment-error-message').textContent = result.error;
                 }
             });
+            const commentText = commentForm.querySelector('.comment-text');
+            const charCount = commentForm.querySelector('#char-count');
+            commentText.addEventListener('input', () => {
+                charCount.textContent = commentText.value.length;
+                if (commentText.value.length === 512) {
+                    charCount.style.color = '#ff903c';
+                }
+            })
         });
         postsDiv.querySelectorAll('.reply-btn').forEach(element => {
             element.addEventListener('click', (event) => {
@@ -232,6 +243,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 const result = await commentReply(commentId, replyText);
                 if (result.success) {
+                    replyText.value = '';
                     /* Generate new comment via DOM manipulation to update UI */
                     // Create reply div
                     const replyDiv = document.createElement('div');
@@ -270,6 +282,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     replyForm.querySelector('.reply-error-message').textContent = result.error;
                 }
             });
+            const replyText = replyForm.querySelector('.reply-text');
+            const charCount = replyForm.querySelector('#char-count');
+            replyText.addEventListener('input', () => {
+                charCount.textContent = replyText.value.length;
+                if (replyText.value.length === 512) {
+                    charCount.style.color = '#ff903c';
+                }
+            })
+            
         });
         postsDiv.querySelectorAll('.comment-like-btn').forEach(likeBtn => {
             likeBtn.addEventListener('mouseenter', () => {
@@ -300,6 +321,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const charCount = document.getElementById('char-count');
         bio.addEventListener('input', () => {
             charCount.textContent = bio.value.length;
+            if (bio.value.length === 512) {
+                charCount.style.color = '#ff903c';
+            }
         })
     }
 });
@@ -414,7 +438,7 @@ const comment = async (postId, content) => {
 
 const commentReply = async (commentId, text) => {
     try {
-        const response = await fetch(`post/${commentId}/reply`, {
+        const response = await fetch(`/post/${commentId}/reply`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -440,7 +464,7 @@ const toggleLikeComment = async (commentId, isLiked) => {
     try {
         // determine correct method and endpoint
         const method = isLiked ? 'DELETE' : 'POST';
-        const endpoint = isLiked ? `comment/${commentId}/unlike` : `comment/${commentId}/like`;
+        const endpoint = isLiked ? `/comment/${commentId}/unlike` : `comment/${commentId}/like`;
         const response = await fetch(endpoint, {
             method: method,
             headers: {

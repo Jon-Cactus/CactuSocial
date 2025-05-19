@@ -2,7 +2,7 @@
 {% load static %}
 {% block title %}{{ title }}{% endblock %}
 {% block body %}
-    <div class="profile-card">
+    <div class="card profile-card">
         <div class="flex">
             <div class="profile-header">
                 <img src="{{ user_obj.profile.display_picture }}" class="profile-picture" alt="Profile picture for {{ user_obj.profile.username }}">
@@ -31,7 +31,7 @@
                 <p>{{ user_obj.profile.bio }}</p>
             {% endif %}
         </div>
-        <div class="post-interact-div">
+        <div class="interact-div">
             {% if user.is_authenticated %}
                 {% if user_obj.username != user.username %}
                     <button class="btn btn-outline-primary"

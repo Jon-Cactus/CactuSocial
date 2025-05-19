@@ -9,9 +9,9 @@
         <form id="post-form">
             <h3>New Post</h3>
             <textarea class="form-textarea" id="post-content" rows="5" cols="50" {% if  not request.user.is_authenticated %}placeholder="Login to post!" disabled{% endif %} maxlength="512" required></textarea>
-            <p><span id="char-count">0</span>/512</p>
-            <div>
-                <button id="post-btn" class="post-btn"{% if not request.user.is_authenticated %}disabled{% endif %}>Post</button>
+            <div class="char-count-div">
+                <button id="post-btn" class="post-btn btn-base submit-btn"{% if not request.user.is_authenticated %}disabled{% endif %}>Post</button>
+                <p><span id="char-count">0</span>/512</p>
             </div>
         </form>
     </div>

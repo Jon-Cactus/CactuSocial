@@ -33,14 +33,18 @@
                 <!--Comment form-->
                 <div class="comment-form-div">
                     <form class="comment-form">
-                        <textarea class="form-textarea comment-content" rows="5" cols="50" required {% if not user.is_authenticated %}placeholder="Login to comment!" disabled{% endif %}></textarea>
+                        <textarea class="form-textarea comment-text" rows="5" cols="50" required {% if not user.is_authenticated %}placeholder="Login to comment!" disabled{% endif %}></textarea>
                         <div class="comment-error-message"></div>
-                        <button class="submit-comment-btn" data-id="{{ post.id }}" {% if not user.is_authenticated %}disabled{% endif %}>Comment</button>
+                        <div class="char-count-div">
+                            <button class="submit-comment-btn btn-base submit-btn" data-id="{{ post.id }}" {% if not user.is_authenticated %}disabled{% endif %}>Comment</button>
+                            <p><span id="char-count">0</span>/512</p>
+                        </div>
                     </form>
                 </div>
                 <!--Comments container-->
+                <h3>Comments</h3>
+                <!--TODO: update styling-->
                 <div class="comments-div">
-                    <h3>Comments</h3>
                     {% for comment in post.comment_set.all %}
                         <div class="comment-div">
                             <div class="comment-header-div">
@@ -57,9 +61,7 @@
                                     🩶
                                 {% endif %}
                                 <strong class="like-count count">{{ comment.like_count }}</strong>
-                                {% if comment.profile != user.profile %}
-                                    <button class="reply-btn post-interact-btn" data-replycount="{{ comment.reply_count }}">Load {{ comment.reply_count }} replies</button>
-                                {% endif %}
+                                <button class="reply-btn" data-replycount="{{ comment.reply_count }}">Load {{ comment.reply_count }} replies</button>
                                 {% if comment.profile == user.profile %}
                                     <button class="comment-edit-btn" data-id="{{ post.id }}">Edit</button>
                                 {% endif %}
@@ -77,7 +79,10 @@
                                     <form class="reply-form">
                                         <textarea class="form-textarea reply-text" rows="5" cols="50" required {% if not user.is_authenticated %}placeholder="Login to reply!" disabled{% endif %}></textarea>
                                         <div class="reply-error-message"></div>
-                                        <button class="submit-reply-btn" data-id="{{ comment.id }}" {% if not user.is_authenticated %}disabled{% endif %}>Reply</button>
+                                        <div class="char-count-div">
+                                            <button class="submit-reply-btn btn-base submit-btn" data-id="{{ comment.id }}" {% if not user.is_authenticated %}disabled{% endif %}>Reply</button>
+                                            <p><span id="char-count">0</span>/512</p>
+                                        </div>
                                     </form>
                                 </div>
                                 <!--Replies-->
