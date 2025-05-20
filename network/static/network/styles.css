@@ -43,10 +43,22 @@ button:focus, a:focus, textarea:focus {
     /*border: 1px solid yellow;*/
 }
 
+.post-card-header {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin: 0 0 10px 0;
+}
+
 .header-txt {
     align-self: flex-start;
     width: 550px;
     color: var(--primary);
+}
+
+h3 {
+    position: relative;
+    top: 9px;
 }
 
 .profile-header-txt {
@@ -72,11 +84,19 @@ button:focus, a:focus, textarea:focus {
     align-items: center;
 }
 
-.profile-picture {
+.profile-picture-base {
     border-radius: 100px;
-    height: 125px;
-    width: 125px;
     margin: 10px 0px 0px 0px;
+}
+
+.picture-large {
+    height: 115px;
+    width: 115px;
+}
+
+.picture-small {
+    height: 50px;
+    width: 50px;
 }
 
 .counts {
@@ -102,7 +122,6 @@ button:focus, a:focus, textarea:focus {
 }
 
 .post-form {
-
 }
 
 .form-textarea {
@@ -121,14 +140,7 @@ button:focus, a:focus, textarea:focus {
     flex-grow: 1;
 }
 
-.post-div {
-    border-radius: 15px;
-    width: 550px;
-    background-color: var(--light-background);
-    margin-top: 15px;
-    padding: 6px 0 1px 15px;
-    /*border: 1px solid orange;*/
-}
+
 
 .btn-base {
     border: none;

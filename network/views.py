@@ -6,7 +6,6 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST, require_http_methods
 from django.utils import timezone
 from .models import User, Profile, Post, Comment, CommentReply
@@ -252,7 +251,6 @@ def comment(request, post_id):
             "text": comment.text,
             "timestamp": comment.timestamp.isoformat(),
             # TODO: move to edit_comment function
-            "edited_timestamp": comment.edited_timestamp.isoformat() if comment.edited_timestamp else None,
             # TODO: reply count
         }
     })

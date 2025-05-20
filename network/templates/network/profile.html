@@ -5,7 +5,7 @@
     <div class="card profile-card">
         <div class="flex">
             <div class="profile-header">
-                <img src="{{ user_obj.profile.display_picture }}" class="profile-picture" alt="Profile picture for {{ user_obj.profile.username }}">
+                <img src="{{ user_obj.profile.display_picture }}" class="profile-picture-base picture-large" alt="Profile picture for {{ user_obj.profile.username }}">
                 <div>
                     <h1 class="profile-header-txt">{{ user_obj.username }}</h1>
                 </div>
@@ -13,7 +13,6 @@
             <div class="counts">
                 <div>
                     <p>Followers:</p>
-                    <!--TODO: update count in the UI on follow-->
                     <strong id="follower-count">{{ user_obj.profile.follower_count }}</strong>
                 </div>
                 <div>
@@ -34,7 +33,7 @@
         <div class="interact-div">
             {% if user.is_authenticated %}
                 {% if user_obj.username != user.username %}
-                    <button class="btn btn-outline-primary"
+                    <button class="btn-base {% if is_following %}cancel-btn{% else %}submit-btn{% endif %}"
                         id="toggle-follow-btn"
                         data-username="{{ user_obj.username }}"
                         data-isfollowing="{% if is_following %}true{% else %}false{% endif %}">
@@ -47,6 +46,7 @@
             {% endif %}
         </div>
     </div>
+    <div id="message-div" display="none"></div>
 
     {% include "network/partials/load_posts.html" with page_obj=page_obj %}
 {% endblock %}
