@@ -36,17 +36,27 @@ document.addEventListener('DOMContentLoaded', function() {
             toggleFollowBtn.disabled = true; // Disable button while fetching API
             const result = await toggleFollow(username, isFollowing);
             if (result.success) {
+                const messageDiv = document.getElementById('message-div');
                 if (result.following) {
-                    // TODO: change to error div
-                    alert('Successfully followed user')
+                    messageDiv.style.display = 'block';
+                    messageDiv.textContent = 'Successfully followed user!';
                 } else {
-                    // TODO: change to error div
-                    alert('Successfully unfollowed user')
+                    messageDiv.style.display = 'block';
+                    messageDiv.textContent = 'Successfully unfollowed user!';
                 }
+                // Hide message div after 3 seconds
+                setTimeout(() => {
+
+                    messageDiv.style.display = 'none';
+                }, 3000);
                 // Update follower count on profile page
                 const followerCount = document.getElementById('follower-count');
-                followerCount.innerText = `Followers: ${result.followerCount}`;
+                followerCount.innerText = `${result.followerCount}`;
                 toggleFollowBtn.innerText = result.following ? 'Unfollow' : 'Follow';
+                // Remove all color classes so that when the correct is added it will display properly
+                toggleFollowBtn.classList.remove('submit-btn', 'cancel-btn');
+                // Add correct class for follow btn
+                toggleFollowBtn.classList.add(result.following ? 'cancel-btn' : 'submit-btn');
                 event.target.dataset.isfollowing = result.following.toString();
             } else {
                 // TODO: change to error div
@@ -57,8 +67,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }  
 
     // Handle post edits
-    /* TODO: potential refactor with changing scope of certain variables (postDiv for example,
-    so that it isn't necessary to check for postsDiv for every action) */
     if (postsDiv) {
         postsDiv.querySelectorAll('.edit-btn').forEach(element => {
             element.addEventListener('click', (event) => { // Add event listeners to each btn
@@ -122,7 +130,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             alert(`Error: ${result.error}`)
                         }
                     });
-                    // TODO: Check if there is a better way to handle this
+                    // Handle post edit cancellation
                     postDiv.querySelector('#edit-post-cancel-btn').addEventListener('click', () => {
                         editFormDiv.innerHTML = '';
                         postTextDiv.style.display = 'block';
@@ -243,7 +251,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 const result = await commentReply(commentId, replyText);
                 if (result.success) {
-                    replyText.value = '';
                     /* Generate new comment via DOM manipulation to update UI */
                     // Create reply div
                     const replyDiv = document.createElement('div');
@@ -278,6 +285,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     replyDiv.appendChild(replyTextElement);
                     // Insert replyDiv to the replies container
                     repliesDiv.prepend(replyDiv);
+                    replyForm.querySelector('.reply-text').value = '';
                 } else {
                     replyForm.querySelector('.reply-error-message').textContent = result.error;
                 }
@@ -464,7 +472,7 @@ const toggleLikeComment = async (commentId, isLiked) => {
     try {
         // determine correct method and endpoint
         const method = isLiked ? 'DELETE' : 'POST';
-        const endpoint = isLiked ? `/comment/${commentId}/unlike` : `comment/${commentId}/like`;
+        const endpoint = isLiked ? `/comment/${commentId}/unlike` : `/comment/${commentId}/like`;
         const response = await fetch(endpoint, {
             method: method,
             headers: {
