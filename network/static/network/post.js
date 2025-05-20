@@ -1,12 +1,6 @@
-let csrfToken;
-
 document.addEventListener('DOMContentLoaded', function() {
-    csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    // Gain control of necessary DOM elements
     const postForm = document.getElementById('post-form');
     const postsDiv = document.querySelector('.posts-div');
-    const toggleFollowBtn = document.getElementById('toggle-follow-btn');
-    const editProfileForm = document.getElementById('edit-profile-form');
 
     // Handle post form submission
     if (postForm) {
@@ -23,49 +17,6 @@ document.addEventListener('DOMContentLoaded', function() {
             post();
         });
     }
-
-    // Handle follow toggling
-    if (toggleFollowBtn) {
-        toggleFollowBtn.addEventListener('click', async (event) => {
-            const username = event.target.dataset.username;
-            const isFollowing = event.target.dataset.isfollowing === 'true'; // Convert to bool
-            if (!username) {
-                console.log(`Couldn't find username`);
-                return;
-            }
-            toggleFollowBtn.disabled = true; // Disable button while fetching API
-            const result = await toggleFollow(username, isFollowing);
-            if (result.success) {
-                const messageDiv = document.getElementById('message-div');
-                if (result.following) {
-                    messageDiv.style.display = 'block';
-                    messageDiv.textContent = 'Successfully followed user!';
-                } else {
-                    messageDiv.style.display = 'block';
-                    messageDiv.textContent = 'Successfully unfollowed user!';
-                }
-                // Hide message div after 3 seconds
-                setTimeout(() => {
-
-                    messageDiv.style.display = 'none';
-                }, 3000);
-                // Update follower count on profile page
-                const followerCount = document.getElementById('follower-count');
-                followerCount.innerText = `${result.followerCount}`;
-                toggleFollowBtn.innerText = result.following ? 'Unfollow' : 'Follow';
-                // Remove all color classes so that when the correct is added it will display properly
-                toggleFollowBtn.classList.remove('submit-btn', 'cancel-btn');
-                // Add correct class for follow btn
-                toggleFollowBtn.classList.add(result.following ? 'cancel-btn' : 'submit-btn');
-                event.target.dataset.isfollowing = result.following.toString();
-            } else {
-                // TODO: change to error div
-                alert(`Error: ${result.error}`);
-            }
-            toggleFollowBtn.disabled = false; // Restore button
-        });
-    }  
-
     // Handle post edits
     if (postsDiv) {
         postsDiv.querySelectorAll('.edit-btn').forEach(element => {
@@ -148,13 +99,13 @@ document.addEventListener('DOMContentLoaded', function() {
             postLikeBtn.addEventListener('mouseleave', () => {
                 postLikeBtn.innerText = '❤️';
             });
-
+    
             postLikeBtn.addEventListener('click', async (event) => {
                 const postId = event.target.dataset.id;
                 const isLiked = event.target.dataset.liked === 'true';
                 // Disable button to protect from spam clicks
                 event.target.disabled = true;
-
+    
                 const result = await toggleLikePost(postId, isLiked);
                 if (result.success) {
                     // update like count UI
@@ -188,7 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const commentsDiv = commentForm.closest('.comment-section-div').querySelector('.comments-div');
                 const result = await comment(postId, content);
                 if (result.success) { // Ensure result has been successfully retrieved
-
+    
                     /* Generate new comment via DOM manipulation to update UI */
                     // Create comment div
                     const commentDiv = document.createElement('div');
@@ -207,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     timestamp.classList.add('timestamp-txt');
                     timestamp.textContent = new Date(result.comment.timestamp).toLocaleString();
                     commentHeaderDiv.appendChild(timestamp);
-
+    
                     commentDiv.appendChild(commentHeaderDiv);
                     // Create comment text
                     const commentText = document.createElement('p');
@@ -248,7 +199,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const commentId = replyForm.querySelector('.submit-reply-btn').dataset.id;
                 const replySectionDiv = replyForm.closest('.reply-section-div');
                 const repliesDiv = replySectionDiv.querySelector('.replies-div');
-
+    
                 const result = await commentReply(commentId, replyText);
                 if (result.success) {
                     /* Generate new comment via DOM manipulation to update UI */
@@ -268,7 +219,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     profileLink.textContent = result.commentReply.username;
                     const recipientUserText = document.createElement('p');
                     recipientUserText.textContent = `replying to: ${result.commentReply.recipient_username}`;
-
+    
                     replyHeader.appendChild(profileLink);
                     replyHeader.appendChild(recipientUserText);
                     replyHeaderDiv.appendChild(replyHeader);
@@ -324,204 +275,4 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     };
-    if (editProfileForm) {
-        const bio = document.getElementById('id_bio');
-        const charCount = document.getElementById('char-count');
-        bio.addEventListener('input', () => {
-            charCount.textContent = bio.value.length;
-            if (bio.value.length === 512) {
-                charCount.style.color = '#ff903c';
-            }
-        })
-    }
-});
-/*API Endpoints*/
-
-const post = async () => {
-    try {
-        const content = document.getElementById('post-content').value;
-        if (!content) {
-            alert('Post content cannot be empty!');
-            return;
-        }
-        const response = await fetch('/post', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken
-            },
-            body: JSON.stringify({
-                content: content
-            })
-        });
-        const data = await response.json();
-        if (response.ok) {
-            document.querySelector('#content').value = '';
-            alert(data.message);
-            window.location.reload();
-        } else {
-            alert(`Error: ${data.error}`)
-        }
-    } catch (error) {
-        console.error('Fetch error:', error);
-        alert('Failed to submit post. Check console for details.');
-    }
-}
-
-const editPost = async (postId, updatedContent) => {
-    try {
-        const response = await fetch(`/post/${postId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken
-            },
-            body: JSON.stringify({
-                updatedContent: updatedContent,
-            })
-        });
-        const data = await response.json();
-        if (response.ok && data.message) {
-            return { success: true, post: data.post };
-        } else {
-            return { success: false, error: data.error };
-        }
-    } catch (error) {
-        console.log('Error:', error);
-        return { success: false, error: 'Failed to update post' };
-    }
-}
-
-const toggleLikePost = async (postId, isLiked) => {
-    try {
-        // determine correct method and endpoint
-        const method = isLiked ? 'DELETE' : 'POST';
-        const endpoint = isLiked ? `/post/${postId}/unlike` : `/post/${postId}/like`;
-        const response = await fetch(endpoint, {
-            method: method,
-            headers: {
-                'X-CSRFToken': csrfToken
-            }
-        });
-        const data = await response.json();
-        if (response.ok) {
-            return {
-                success: true,
-                message: data.message,
-                isLiked: data.is_liked,
-                likeCount: data.like_count
-            }
-        } else {
-            return { success: false, error: data.error };
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        return { success: false, error: error.message };
-    }
-}
-
-const comment = async (postId, content) => {
-    try {
-        const response = await fetch(`/post/${postId}/comment`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken
-            },
-            body: JSON.stringify({
-                content: content
-            })
-        });
-        const data = await response.json();
-        if (response.ok) {
-            return { success: true, comment: data.comment };
-        } else {
-            return { success: false, error: data.error };
-        }
-    } catch (error) {
-        console.log('Error:', error);
-        return { success: false, error: 'Failed to post comment' };
-    }
-}
-
-const commentReply = async (commentId, text) => {
-    try {
-        const response = await fetch(`/post/${commentId}/reply`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken
-            },
-            body: JSON.stringify({
-                text: text
-            })
-        })
-        const data = await response.json();
-        if (response.ok) {
-            return { success: true, commentReply: data.comment_reply };
-        } else {
-            return { success: false, error: data.error };
-        }
-    } catch (error) {
-        console.error('Error:', error)
-        return { success: false, error: 'Failed to post reply' };
-    }
-}
-
-const toggleLikeComment = async (commentId, isLiked) => {
-    try {
-        // determine correct method and endpoint
-        const method = isLiked ? 'DELETE' : 'POST';
-        const endpoint = isLiked ? `/comment/${commentId}/unlike` : `/comment/${commentId}/like`;
-        const response = await fetch(endpoint, {
-            method: method,
-            headers: {
-                'X-CSRFToken': csrfToken
-            }
-        });
-        const data = await response.json();
-        if (response.ok) {
-            return {
-                success: true,
-                message: data.message,
-                isLiked: data.is_liked,
-                likeCount: data.like_count
-            }
-        } else {
-            return {
-                success: false,
-                error: data.error
-            }
-        }
-    } catch (error) {
-        console.error('Error', error);
-        return { success: false, error: error.message }
-    }
-}
-
-const toggleFollow = async (username, isFollowing) => {
-    try {
-        const method = isFollowing ? 'DELETE' : 'POST';
-        const endpoint = isFollowing ? `/profile/${username}/unfollow` : `/profile/${username}/follow`;
-        const response = await fetch(endpoint, {
-            method: method,
-            headers: {
-                'X-CSRFToken': csrfToken
-            }
-        });
-        const data = await response.json();
-        if (response.ok) {
-            return {
-                success: true,
-                message: data.message,
-                following: data.following,
-                followerCount: data.follower_count
-            };
-        } else {
-            return { success: false, error: data.error };
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        return { success: false, error: error.message };
-    }
-}
+})

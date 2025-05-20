@@ -51,5 +51,7 @@
     {% include "network/partials/load_posts.html" with page_obj=page_obj %}
 {% endblock %}
 {% block script %}
-    <script src="{% static 'network/index.js' %}"></script>
+    <script src="{% static 'network/api.js' %}"></script>
+    <script src="{% static 'network/post.js' %}"></script>
+    <script src="{% static 'network/follow.js' %}"></script>
 {% endblock %}
