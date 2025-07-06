@@ -1,0 +1,14 @@
+{% extends 'cactusocial_app/layout.html' %}
+{% load static %}
+{% block title %}Following{% endblock %}
+{% block body %}
+    <div class="header-div">
+        <h1 class="header-txt">Following</h1>
+    </div>
+{% include "cactusocial_app/partials/load_posts.html" with page_obj=page_obj %}
+
+{% endblock %}
+{% block script %}
+    <script src="{% static 'cactusocial_app/api.js' %}"></script>
+    <script src="{% static 'cactusocial_app/post.js' %}"></script>
+{% endblock %}

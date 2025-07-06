@@ -65,3 +65,5 @@ The application is architected as a server-rendered Django project, enhanced wit
     - **Nested Comments**: Users can reply directly to comments, creating threaded conversations.
 
     - **Pagination**: Implemented efficient server-side pagination for all post feeds using Django's `Paginator` class to ensure the application remains performant as the number of posts grows.
+
+Color scheme inspired by Brittany Chang's Halcyon theme

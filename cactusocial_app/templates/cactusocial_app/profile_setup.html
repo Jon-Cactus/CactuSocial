@@ -1,0 +1,20 @@
+{% extends "cactusocial_app/layout.html" %}
+{% load static %}
+{% block title %}Set Up Your Profile{% endblock %}
+{% block body %}
+    <div class="card">
+        <h2 class="header-txt">Customize your profile</h2>
+        <form id="edit-profile-form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="char-count-div">
+                <button class="btn-base submit-btn" type="submit">Save</button>
+                <a href="{% url 'profile' username=user.username %}">Skip</a>
+                <p><span id="char-count">0</span>/512</p>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+{% block script %}
+    <script src="{% static 'cactusocial_app/edit_profile.js' %}"></script>
+{% endblock %}

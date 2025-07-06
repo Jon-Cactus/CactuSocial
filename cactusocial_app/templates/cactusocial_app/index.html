@@ -1,0 +1,23 @@
+{% extends "cactusocial_app/layout.html" %}
+{% load static %}
+{% block title %}All Posts{% endblock %}
+{% block body %}
+    <div class="header-div">
+        <h1 class="header-txt">All Posts</h1>
+    </div>
+    <div class="card post-div">
+        <form id="post-form">
+            <h3>New Post</h3>
+            <textarea class="form-textarea" id="post-content" rows="5" cols="50" {% if  not request.user.is_authenticated %}placeholder="Login to post!" disabled{% endif %} maxlength="512" required></textarea>
+            <div class="char-count-div">
+                <button id="post-btn" class="post-btn btn-base submit-btn"{% if not request.user.is_authenticated %}disabled{% endif %}>Post</button>
+                <p><span id="char-count">0</span>/512</p>
+            </div>
+        </form>
+    </div>
+    {% include "cactusocial_app/partials/load_posts.html" with page_obj=page_obj %}
+{% endblock %}
+{% block script %}
+    <script src="{% static 'cactusocial_app/api.js' %}"></script>
+    <script src="{% static 'cactusocial_app/post.js' %}"></script>
+{% endblock %}
