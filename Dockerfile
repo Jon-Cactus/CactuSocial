@@ -21,4 +21,4 @@ ARG DJANGO_SECRET_KEY=build-secret-key
 
 RUN SECRET_KEY=$DJANGO_SECRET_KEY python manage.py collectstatic --noinput
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "cactusocial.wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "cactusocial_config.wsgi:application"]
