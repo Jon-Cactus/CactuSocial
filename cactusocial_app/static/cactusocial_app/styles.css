@@ -25,14 +25,20 @@ button:focus, a:focus, textarea:focus {
     background-color: #171c28;
 }
 
-.body {
+body {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    overflow-x: hidden;
+}
+
+.page {
     background-color: var(--background);
     color: whitesmoke;
     display: flex;
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
-    padding: 10px;
 }
 
 .header {
@@ -54,7 +60,6 @@ button:focus, a:focus, textarea:focus {
 
 .header-txt {
     align-self: flex-start;
-    width: 100%;
     max-width: 550px;
     color: var(--primary);
 }
@@ -240,12 +245,9 @@ a.edit-btn {
 }
 
 @media (max-width: 768px) {
-    .body {
-        padding: 5px; 
-    }
 
     .card {
-        width: 450px;
+        width: 350px;
         padding: 10px;
     }
 
