@@ -30,6 +30,9 @@ ALLOWED_HOSTS = []
 if 'ALLOWED_HOSTS' in os.environ:
     ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS').split(',')
 
+CSRF_TRUSTED_ORIGINS = []
+if 'CSRF_TRUSTED_ORIGINS' in os.environ:
+    CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS').split(',')
 
 # Application definition
 
