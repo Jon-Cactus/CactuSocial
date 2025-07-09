@@ -32,6 +32,7 @@ button:focus, a:focus, textarea:focus {
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
+    padding: 10px;
 }
 
 .header {
@@ -40,7 +41,8 @@ button:focus, a:focus, textarea:focus {
 }
 
 .header-div {
-    /*border: 1px solid yellow;*/
+    width: 100%;
+    max-width: 550px;
 }
 
 .post-card-header {
@@ -52,7 +54,8 @@ button:focus, a:focus, textarea:focus {
 
 .header-txt {
     align-self: flex-start;
-    width: 550px;
+    width: 100%;
+    max-width: 550px;
     color: var(--primary);
 }
 
@@ -76,7 +79,6 @@ h3 {
 }
 
 .profile-card {
-    /*border: 1px solid green;*/
     min-height: 250px;
 }
 
@@ -104,7 +106,6 @@ h3 {
     justify-content: space-evenly;
     text-align: center;
     flex-grow: 1;
-    /*border: 1px solid turquoise;*/
     font-size: 1.5rem;
 }
 
@@ -116,7 +117,6 @@ h3 {
 .bio {
     padding: 5px 5px 0px 5px;
     margin: 0px;
-    /*border: 1px solid purple;*/
     overflow-y: auto;
     word-wrap: break-word;
 }
@@ -127,7 +127,8 @@ h3 {
 .form-textarea {
     background-color: #8695b7;
     color: whitesmoke;
-    /*opacity: .5;*/
+    align-self: center;
+    margin: 5px 0;
     padding: 3px 10px;
     border-radius: 10px;
     border: none;
@@ -136,11 +137,8 @@ h3 {
 }
 
 .posts-div {
-    /*border: 1px solid red;*/
     flex-grow: 1;
 }
-
-
 
 .btn-base {
     border: none;
@@ -182,10 +180,7 @@ h3 {
     display: inline-flex;
     gap: 5px;
     margin: 0px;
-    /*border: 1px solid red;*/
 }
-
-
 
 /* buttons */
 
@@ -217,7 +212,6 @@ a.edit-btn {
 
 .interact-div {
     width: 100%;
-    /*border: 1px solid green;*/
     display: inline-flex;
     align-items: center;
     margin: 4px 0px 5px 0px;
@@ -243,4 +237,57 @@ a.edit-btn {
 
 .flex {
     display: flex;
+}
+
+@media (max-width: 768px) {
+    .body {
+        padding: 5px; 
+    }
+
+    .card {
+        width: 450px;
+        padding: 10px;
+    }
+
+    .profile-card .flex {
+        gap: 15px;
+    }
+
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .counts {
+        gap: 15px;
+    }
+
+    .counts p {
+    }
+
+    .picture-large {
+        height: 90px;
+        width: 90px;
+    }
+    
+    .header-txt {
+        font-size: 1.5rem; /* Reduce header font size */
+        text-align: center;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    .post-card-header h3 {
+        font-size: 1.1rem;
+    }
+
+    .form-textarea {
+        margin-left: 5px;
+    }
+
+    .form-group input {
+        width: 100%;
+    }
 }
